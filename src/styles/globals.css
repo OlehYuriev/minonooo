@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --foreground: #2d2d2d;
+  --backgroundGrey: #e5e5e5;
+  --headerHeight: 3.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+.font-second {
+  font-family: var(--second-family);
+}
+
+.font-third {
+  font-family: var(--third-family);
+}
+
+.font-inter {
+  font-family: var(--inter);
+}
+html {
+  font-size: 11px;
+  scrollbar-gutter: stable;
+}
+@media (min-width: 350px) {
+  html {
+    font-size: 13px;
+  }
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+@media (min-width: 1024px) {
+  html {
+    font-size: 16px;
+  }
+}
+html,
+body,
+#container {
+  height: 100%;
+}
+body {
+  color: var(--foreground);
+  font-family: var(--font-family), sans-serif;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;
+}
+button {
+  cursor: pointer;
+}
+.menu-open {
+  scrollbar-gutter: stable;
+  overflow: hidden;
+}
+/* swiper---------------------------------------------------*/
+.swiper-button-disabled {
+  background-color: gray;
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.swiper-pagination-bullet.swiper-pagination-bullet-active {
+  background-color: white;
+}
+
+.height-minus-header {
+  height: calc(100% - var(--headerHeight));
+}
+
+.margin-top-minus-header {
+  margin-top: var(--headerHeight);
+}
+
+.max-w-screen {
+  max-width: 1255px;
+}
+
+.screen-minus-header {
+  height: calc(100vh - var(--headerHeight));
+}
