@@ -3,6 +3,7 @@ import { Footer } from "@/layout/footer";
 import { Header } from "@/layout/header";
 import { ToastProvider } from "@/providers/toast-provider";
 import "@/styles/globals.css";
+
 import type { Metadata } from "next";
 import { Forum, Inter, Montserrat, Playfair_Display } from "next/font/google";
 

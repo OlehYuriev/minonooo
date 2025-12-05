@@ -3,8 +3,9 @@
 type Props = {
   message: string;
   type?: "success" | "error" | "info";
+  onClose: () => void;
 };
-export function Toast({ type = "success", message }: Props) {
+export function Toast({ type = "success", message, onClose }: Props) {
   const colors = {
     success: "bg-green-500",
     error: "bg-red-500",
@@ -12,8 +13,17 @@ export function Toast({ type = "success", message }: Props) {
   };
   return (
     <div>
-      <div className={`px-4 py-2 text-white rounded shadow-lg ${colors[type]}`}>
+      <div
+        className={`px-6 py-3 text-white rounded shadow-lg ${colors[type]} relative`}
+      >
         {message}
+
+        <button
+          onClick={onClose}
+          className="absolute top-1 right-2 text-white/70 hover:text-white"
+        >
+          ✕
+        </button>
       </div>
     </div>
   );

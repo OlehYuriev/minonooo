@@ -1,35 +1,41 @@
 "use client";
-
 import { useAuth } from "@/auth/hooks/use-auth";
 import { Button } from "@/components/ui/buttons";
-import { Input } from "@/components/ui/input";
-import { db } from "@/firebase";
-import { useToast } from "@/hooks/use-toast";
+import { Form } from "@/components/ui/form";
+import { RHFInput, RHFPhoneInput } from "@/components/ui/input";
+import { RHFAvatarInput } from "@/components/ui/input/RHFAvatarInput";
+import { auth, db, storage } from "@/firebase";
+import { checkLoginExists, saveLogin } from "@/services/user";
+import { toast } from "@/utils/toast";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { updateProfile } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
-import { useEffect, useState } from "react";
-interface IProfile {
-  login: string;
-  name: string;
-  surname: string;
-  email: string;
-  phone: string;
-}
-interface IErrorProfile {
-  login?: string | null;
-  name?: string | null;
-  surname?: string | null;
-  email?: string | null;
-  phone?: string | null;
-}
+  deleteObject,
+  getDownloadURL,
+  listAll,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+
+import { z } from "zod";
+
+export const profileSchema = z.object({
+  name: z.string().trim(),
+  surname: z.string().trim(),
+  login: z.string().min(3, "Логін мінімум 3 символи"),
+  email: z.email({ message: "Електронна адреса має бути дійсною!" }).trim(),
+  phone: z
+    .string()
+    .regex(
+      /^\+380 \(\d{2}\) \d{3}-\d{2}-\d{2}$/,
+      "Номер має бути у форматі +380 (XX) XXX-XX-XX"
+    ),
+  avatar: z.union([z.instanceof(File), z.string(), z.null()]),
+});
+export type ProfileFormData = z.infer<typeof profileSchema>;
 async function fetchUserProfile(uid: string) {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
@@ -41,144 +47,135 @@ async function fetchUserProfile(uid: string) {
   }
 }
 
-async function saveLogin(userId: string, login: string) {
-  const usernamesRef = collection(db, "usernames");
-  const q = query(usernamesRef, where("login", "==", login));
-  const snapshot = await getDocs(q);
+async function uploadAvatar(userId: string, file: File) {
+  if (!file) return null;
 
-  if (!snapshot.empty) {
-    throw new Error("Такий логін вже використовується");
-  }
+  const storageRef = ref(storage, `avatars/${userId}/${file.name}`);
 
-  // Сохраняем логин
-  await setDoc(doc(db, "usernames", userId), { login });
+  // загружаем файл
+  await uploadBytes(storageRef, file);
+
+  // получаем публичный URL
+  const url = await getDownloadURL(storageRef);
+
+  // сразу можно сохранить в Firestore
+  const userDocRef = doc(db, "users", userId);
+  await setDoc(userDocRef, { avatar: url }, { merge: true });
+
+  return url;
 }
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const methods = useForm<ProfileFormData>({
+    mode: "onSubmit",
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: "",
+      surname: "",
+      login: "",
+      email: "",
+      phone: "",
+      avatar: "",
+    },
+  });
+
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
   useEffect(() => {
     console.log(user);
-    async function loadProfile() {
-      if (user) {
-        const profile = await fetchUserProfile(user.uid);
-        console.log("sdss", profile);
+    if (!user) return;
 
-        setData({
-          email: profile?.email || user.email || "",
-          login: profile?.login || user.displayName || "",
-          name: profile?.name || "",
-          surname: profile?.surname || "",
-          phone: profile?.phone || "",
-        });
-      }
-    }
+    const loadProfile = async () => {
+      const profileData = await fetchUserProfile(user.uid);
+
+      reset({
+        name: profileData?.name || "",
+        surname: profileData?.surname || "",
+        login: user.displayName || profileData?.login || "",
+        email: profileData?.email || user?.email || "",
+        phone: profileData?.phone || "",
+        avatar: profileData?.avatar || "",
+      });
+    };
+
     loadProfile();
-  }, [user]);
-  const [data, setData] = useState<IProfile>({
-    email: "",
-    login: "",
-    name: "",
-    phone: "",
-    surname: "",
-  });
+  }, [user, reset]);
 
-  const { showToast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<IErrorProfile>({
-    email: null,
-    login: null,
-    name: null,
-    phone: null,
-    surname: null,
-  });
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const onSubmit = handleSubmit(async (data) => {
     try {
       if (!user) return;
 
-      // обновляем Firestore
-      await saveLogin(user.uid, data.login);
+      const { userId, login } = await checkLoginExists(user.uid, data.login);
+      if (userId) await saveLogin(userId, login);
+
+      let avatarUrl = data.avatar;
+      if (data.avatar instanceof File) {
+        avatarUrl = await uploadAvatar(user.uid, data.avatar);
+      }
+
       const docRef = doc(db, "users", user.uid);
-      await setDoc(docRef, data, { merge: true });
+      await setDoc(docRef, { ...data, avatar: avatarUrl }, { merge: true });
 
-      // можно также обновить displayName в Firebase Auth
-      await updateProfile(user, { displayName: data.login });
-
-      showToast("Профіль успішно оновлено");
+      await updateProfile(user, {
+        displayName: data.login,
+        photoURL: typeof avatarUrl === "string" ? avatarUrl : null,
+      });
+      await user.reload();
+      const refreshedUser = auth.currentUser;
+      if (refreshedUser) {
+        setUser({ ...refreshedUser });
+      }
+      toast("Профіль успішно оновлено!");
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
+      toast("Помилка", "error");
     }
-  };
+  });
+  async function deleteAvatar(userId: string) {
+    if (!userId) return;
+    try {
+      const avatarRef = ref(storage, `avatars/${userId}/`);
+      const list = await listAll(avatarRef);
+      const promises = list.items.map((fileRef) => deleteObject(fileRef));
+
+      await Promise.all(promises);
+      console.log("Аватар успішно видалено");
+    } catch (error) {
+      console.error("Ошибка при удалении аватара:", error);
+    }
+  }
   return (
     <>
       <h1 className=" text-3xl font-medium mt-12">Основна інформація</h1>
-      <form
-        className="max-w-xl  flex flex-col gap-y-5 mt-6"
-        onSubmit={handleSubmit}
-      >
-        <Input
-          name="name"
-          className="w-full"
-          value={data.name}
-          onChange={(e) =>
-            setData((prev) => ({ ...prev, name: e.target.value }))
-          }
-          error={errors.name}
-          placeholder="Ім'я"
-        />{" "}
-        <Input
-          name="surname"
-          className="w-full"
-          value={data.surname}
-          onChange={(e) =>
-            setData((prev) => ({ ...prev, surname: e.target.value }))
-          }
-          error={errors.surname}
-          placeholder="Прізвище"
-        />
-        <Input
-          name="login"
-          className="w-full"
-          value={data.login}
-          onChange={(e) =>
-            setData((prev) => ({ ...prev, login: e.target.value }))
-          }
-          error={errors.login}
-          placeholder="Логін"
-        />
-        <Input
-          name="phone"
-          className="w-full"
-          value={data.phone}
-          onChange={(e) =>
-            setData((prev) => ({ ...prev, phone: e.target.value }))
-          }
-          error={errors.phone}
-          placeholder="Номер телефону"
-        />
-        <Input
-          name="email"
-          className="w-full"
-          value={data.email}
-          onChange={(e) =>
-            setData((prev) => ({ ...prev, email: e.target.value }))
-          }
-          error={errors.email}
-          placeholder="Email"
-        />
-        <div className="max-w-2xs">
-          <Button
-            text="Зберегти"
-            type="submit"
-            variant="primary"
-            className="!py-4"
-            loading={loading}
+      <Form methods={methods} onSubmit={onSubmit}>
+        <div className="max-w-xl   flex flex-col gap-y-5 mt-6">
+          <RHFAvatarInput
+            name="avatar"
+            onRemove={() => {
+              if (user?.uid) deleteAvatar(user.uid);
+            }}
           />
+          <RHFInput name="name" placeholder="Ім'я" />
+          <RHFInput name="surname" placeholder="Прізвище" />
+          <RHFInput name="login" placeholder="Логін" />
+          <RHFPhoneInput name="phone" />
+          <RHFInput name="email" placeholder="Email" />
+
+          <div className="max-w-2xs">
+            <Button
+              text="Зберегти"
+              type="submit"
+              variant="primary"
+              className="!py-4"
+              loading={isSubmitting}
+            />
+          </div>
         </div>
-      </form>
+      </Form>
     </>
   );
 }

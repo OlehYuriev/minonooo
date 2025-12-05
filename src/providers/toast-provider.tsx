@@ -1,6 +1,7 @@
 "use client";
 import { ToastContainer } from "@/components/ui/toast";
-import { createContext, useCallback, useState } from "react";
+import { registerToast } from "@/utils/toast";
+import { createContext, useCallback, useEffect, useState } from "react";
 export type ToastPosition =
   | "top-left"
   | "top-right"
@@ -11,7 +12,7 @@ export type ToastPosition =
 
 export type ToastType = "success" | "error" | "info";
 type Toast = {
-  id: number;
+  id: string;
   message: string;
   type?: ToastType;
   position?: ToastPosition;
@@ -36,7 +37,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       type: ToastType = "success",
       position: ToastPosition = "bottom-right"
     ) => {
-      const id = Date.now();
+      const id = crypto.randomUUID();
       setToasts((prev) => [...prev, { id, message, type, position }]);
 
       setTimeout(() => {
@@ -45,11 +46,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     },
     []
   );
-
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+  useEffect(() => {
+    registerToast(showToast);
+  }, [showToast]);
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <ToastContainer toasts={toasts} />
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </ToastContext.Provider>
   );
 }
