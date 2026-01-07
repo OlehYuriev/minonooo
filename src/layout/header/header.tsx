@@ -6,7 +6,7 @@ import { Navigation } from "../../components/ui/navigation";
 import { BurgerMenu } from "./burger-menu";
 import { HeaderButtons } from "./header-buttons";
 
-export function Header() {
+export async function Header() {
   return (
     <header className="py-3 px-5 fixed top-0 left-0 right-0 z-10   bg-white">
       <div className="flex items-center justify-between max-w-[1215px] mx-auto ">

@@ -1,6 +1,8 @@
 "use client";
 
 import { auth } from "@/firebase";
+import { setAvatarUrlApi } from "@/services/user";
+
 import { onAuthStateChanged, User } from "firebase/auth";
 import { createContext, useEffect, useState } from "react";
 
@@ -10,6 +12,8 @@ type AuthContextType = {
   role: "admin" | "user" | null;
   setUser: (u: User | null) => void;
   setRole: (r: "admin" | "user" | null) => void;
+  avatarUrl: string | null;
+  setAvatarUrl: (u: string | null) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -18,24 +22,42 @@ export const AuthContext = createContext<AuthContextType>({
   role: null,
   setUser: () => {},
   setRole: () => {},
+  avatarUrl: null,
+  setAvatarUrl: () => {},
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+type AuthProviderProps = {
+  children: React.ReactNode;
+  initialAvatarUrl?: string;
+};
+export function AuthProvider({
+  children,
+  initialAvatarUrl,
+}: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<"admin" | "user" | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(
+    initialAvatarUrl || null
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setLoading(true);
       if (user) {
         setUser(user);
+        const avatarUrl = user.photoURL;
 
-        const tokenResult = await user.getIdTokenResult(true);
+        await setAvatarUrlApi(avatarUrl);
+        setAvatarUrl(avatarUrl);
+        const tokenResult = await user.getIdTokenResult();
+        console.log(tokenResult);
         setRole(tokenResult.claims.role as "admin" | "user");
-        console.log("sdsds11111", tokenResult.claims.role);
       } else {
         setUser(null);
+
+        await setAvatarUrlApi(null);
+        setAvatarUrl(null);
         setRole(null);
       }
 
@@ -45,7 +67,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
   return (
-    <AuthContext.Provider value={{ user, loading, role, setUser, setRole }}>
+    <AuthContext.Provider
+      value={{ user, loading, role, setUser, setRole, avatarUrl, setAvatarUrl }}
+    >
       {children}
     </AuthContext.Provider>
   );

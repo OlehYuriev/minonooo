@@ -10,15 +10,14 @@ type Props = {
 };
 
 export function RHFAvatarInput({ name, onRemove }: Props) {
-  const [preview, setPreview] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const {
     watch,
     setValue,
     formState: { errors },
   } = useFormContext();
-
   const value = watch(name);
+  const [preview, setPreview] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!value) return setPreview(null);
@@ -42,8 +41,8 @@ export function RHFAvatarInput({ name, onRemove }: Props) {
 
   const removeAvatar = async () => {
     if (onRemove) await onRemove();
-    setValue(name, "");
-    setPreview("");
+    setValue(name, null);
+    setPreview(null);
     if (inputRef.current) inputRef.current.value = "";
   };
   const error = errors[name]?.message as string | undefined;

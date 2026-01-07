@@ -13,19 +13,19 @@ type Props = {
 };
 export const FavoriteCart = memo(function FavoriteCart({ item }: Props) {
   const handleIncreaseQuantity = useCallback(() => {
-    addQuantityProduct(item.id, item.selectedSize);
-  }, [item.id, item.selectedSize]);
+    addQuantityProduct(item.id, item.selectedSize, item.selectedColor);
+  }, [item.id, item.selectedSize, item.selectedColor]);
 
   const handleDecreaseQuantity = useCallback(() => {
     if (item.quantity > 1) {
-      decreaseQuantityProduct(item.id, item.selectedSize);
+      decreaseQuantityProduct(item.id, item.selectedSize, item.selectedColor);
     }
-  }, [item.id, item.quantity, item.selectedSize]);
+  }, [item.id, item.quantity, item.selectedSize, item.selectedColor]);
 
   const handleRemoveFromCart = useCallback(() => {
     console.log(item.id, item.selectedSize);
-    removeFromCartProduct(item.id, item.selectedSize);
-  }, [item.id, item.selectedSize]);
+    removeFromCartProduct(item.id, item.selectedSize, item.selectedColor);
+  }, [item.id, item.selectedSize, item.selectedColor]);
   return (
     <div className=" flex gap-x-5 " key={item.id}>
       <div>

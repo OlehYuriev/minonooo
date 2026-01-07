@@ -1,6 +1,14 @@
-import { db } from "@/firebase";
+import { db, storage } from "@/firebase";
 import { toast } from "@/utils/toast";
-import { collection, doc, getDocs, query, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+} from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export async function checkLoginExists(userId: string | null, login: string) {
   const q = query(collection(db, "usernames"));
@@ -18,6 +26,62 @@ export async function checkLoginExists(userId: string | null, login: string) {
   return { userId, login };
 }
 
+/* ---------------------------------------------------------------------------------------- */
+
 export async function saveLogin(userId: string, login: string) {
   await setDoc(doc(db, "usernames", userId), { login });
+}
+
+/* ---------------------------------------------------------------------------------------- */
+
+export async function fetchUserProfile(uid: string) {
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data(); // вернёт объект {login, name, surname, phone, email}
+  } else {
+    return null; // документ не найден
+  }
+}
+
+/* ---------------------------------------------------------------------------------------- */
+
+export async function uploadAvatar(userId: string, file: File) {
+  if (!file) return null;
+
+  const storageRef = ref(storage, `avatars/${userId}/${file.name}`);
+
+  // загружаем файл
+  await uploadBytes(storageRef, file);
+
+  // получаем публичный URL
+  const url = await getDownloadURL(storageRef);
+
+  // сразу можно сохранить в Firestore
+  const userDocRef = doc(db, "users", userId);
+  await setDoc(userDocRef, { avatar: url }, { merge: true });
+
+  return url;
+}
+
+/* ---------------------------------------------------------------------------------------- */
+
+export async function setAvatarUrlApi(url: string | null) {
+  try {
+    const response = await fetch("/api/set-avatar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to set avatar URL");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Ошибка при установке аватара:", error);
+    throw error;
+  }
 }

@@ -1,10 +1,10 @@
 import { ProductSlider } from "@/components/product-slider";
-import { HpmeSlider } from "@/sections/home";
+import { HomeSlider } from "@/sections/home";
 
-export default async function Home() {
+export default function Home() {
   return (
     <>
-      <HpmeSlider />
+      <HomeSlider />
 
       <div className="max-w-screen mx-auto px-5">
         <section className="mt-28">

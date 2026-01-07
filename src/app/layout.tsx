@@ -3,9 +3,9 @@ import { Footer } from "@/layout/footer";
 import { Header } from "@/layout/header";
 import { ToastProvider } from "@/providers/toast-provider";
 import "@/styles/globals.css";
-
 import type { Metadata } from "next";
 import { Forum, Inter, Montserrat, Playfair_Display } from "next/font/google";
+import { cookies } from "next/headers";
 
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
@@ -39,17 +39,20 @@ export const metadata: Metadata = {
   description: "Магазин жіночого та дитячого одягу",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const avatarCookie = cookieStore.get("avatarUrl")?.value;
+  console.log(avatarCookie);
   return (
     <html lang="uk">
       <body
         className={`${montserrat.variable} ${forum.variable} ${playfair.variable} ${inter.variable} font-normal antialiased`}
       >
-        <AuthProvider>
+        <AuthProvider initialAvatarUrl={avatarCookie}>
           <ToastProvider>
             <div className="max-w-[1440px] mx-auto relative" id="container">
               <Header />

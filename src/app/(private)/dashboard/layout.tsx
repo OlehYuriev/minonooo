@@ -10,8 +10,8 @@ export default function DashboardLayout({
     <>
       <PageContainer>
         <div className="flex gap-x-10 h-full">
-          <div className="flex-2/3">{children}</div>
-          <div className="flex-1/3 flex items-center">
+          <div className="sm:flex-2/3 w-full">{children}</div>
+          <div className="flex-1/3 flex mt-32 hidden sm:flex">
             <DashboardSidebar />
           </div>
         </div>

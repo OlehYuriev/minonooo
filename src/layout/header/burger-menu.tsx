@@ -1,10 +1,15 @@
 "use client";
+import { useAuth } from "@/auth/hooks/use-auth";
+import { useLogout } from "@/auth/hooks/use-logout";
 import { Navigation } from "@/components/ui/navigation";
 import { OverlayPanel } from "@/components/ui/overlay-panel";
 import { useState } from "react";
 
 export function BurgerMenu() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
+
+  const logout = useLogout();
 
   return (
     <>
@@ -37,9 +42,17 @@ export function BurgerMenu() {
         open={open}
         setOpen={setOpen}
         position="left"
-        className={` w-2/4`}
+        className={` w-2/4 max-[500px]:w-3/4`}
       >
         <Navigation />
+        {user && (
+          <button
+            onClick={logout}
+            className="opacity-40 hover:opacity-100   transition-all inline-flex mt-6"
+          >
+            Вихід
+          </button>
+        )}
       </OverlayPanel>
     </>
   );

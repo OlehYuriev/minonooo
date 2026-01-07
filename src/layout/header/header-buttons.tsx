@@ -7,13 +7,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { BasketCart } from "../../components/basket";
-import { HeaderAccount } from "./header-account";
+import HeaderAccount from "./header-account";
 import { HeaderButton } from "./header-button";
 import { HeaderOverlayPanel } from "./header-overlay-panel";
 
 export function HeaderButtons() {
   const [openBasket, setOpenBasket] = useState(false);
-  const { user, loading } = useAuth();
+  const { user, avatarUrl } = useAuth();
+
   const cart = useCart();
   const favoriteCarts = useFavoriteCart();
   const toggleBasket = useCallback((e: React.MouseEvent) => {
@@ -42,11 +43,8 @@ export function HeaderButtons() {
           count={cart.length}
           onMouseDown={toggleBasket}
         />
-        {loading ? (
-          <div className="w-[2rem] h-[2rem] rounded-full bg-gray-200 animate-pulse" />
-        ) : (
-          <HeaderAccount user={user} />
-        )}
+
+        <HeaderAccount user={user} avatarUrl={avatarUrl} />
       </div>
 
       <HeaderOverlayPanel

@@ -60,7 +60,7 @@ export function LoginForm() {
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-      <div className="sm:w-md w-full  flex flex-col gap-y-5">
+      <div className="sm:w-md w-full min-w-2xs  flex flex-col gap-y-5">
         <RHFInput name="email" placeholder="email" />
         <RHFInput name="password" placeholder="Пароль" type="password" />
 

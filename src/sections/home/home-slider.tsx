@@ -3,7 +3,7 @@ import { ROUTES } from "@/constants/routes";
 import Link from "next/link";
 import { HomeSwiper } from "./home-swiper";
 
-export function HpmeSlider() {
+export function HomeSlider() {
   return (
     <section className="mt-14 md:bg-[url('/sea.png')] bg-cover bg-center bg-fixed relative screen-minus-header">
       <div
