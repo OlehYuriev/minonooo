@@ -3,6 +3,7 @@ import { useAuth } from "@/auth/hooks/use-auth";
 import { Button } from "@/components/ui/buttons";
 import { Form } from "@/components/ui/form";
 import { RHFInput, RHFPhoneInput } from "@/components/ui/input";
+import { RHFAutocomplete } from "@/components/ui/input/RHFAutocomplete";
 import { RHFRadioGroup } from "@/components/ui/input/RHFRadioGroup";
 import { Loader } from "@/components/ui/loader";
 import { PageContainer } from "@/layout/page-container";
@@ -18,13 +19,35 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
 
+  const methods = useForm<checkoutSchemaType>({
+    mode: "onSubmit",
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      name: "",
+      surname: "",
+      email: "",
+      phone: "",
+      deliveryType: "pickup",
+      city: null,
+      paymentType: "cash",
+    },
+  });
+
+  const {
+    reset,
+    handleSubmit,
+    watch,
+    formState: { isSubmitting },
+  } = methods;
+  const deliveryType = watch("deliveryType");
+  const сity = watch("city");
   async function getNovaPoshta() {
     const data = {
       apiKey: "b150f3a9d495cb47a3879d15b8ba1d10",
       modelName: "AddressGeneral",
       calledMethod: "searchSettlements",
       methodProperties: {
-        CityName: "м.снігу", // текст для поиска
+        CityName: "київ", // текст для поиска
         Limit: "20", // максимальное количество результатов
         Page: "1", // страница
       },
@@ -38,7 +61,8 @@ export default function CheckoutPage() {
       });
       const result = await response.json();
       console.log(result);
-      return result.data; // массив городов/населённых пунктов
+      return result.data;
+      // массив городов/населённых пунктов
     } catch (error) {
       console.error(error);
       return [];
@@ -47,24 +71,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     getNovaPoshta();
   }, []);
-  const methods = useForm<checkoutSchemaType>({
-    mode: "onSubmit",
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: {
-      name: "",
-      surname: "",
-      email: "",
-      phone: "",
-      deliveryType: "pickup",
-      paymentType: "cash",
-    },
-  });
-
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
   useEffect(() => {
     if (!user) return;
 
@@ -107,6 +113,7 @@ export default function CheckoutPage() {
               { value: "post", label: "Доставка поштою" },
             ]}
           />
+
           <h3 className="my-9 text-lg">Спосіб оплати</h3>
           <RHFRadioGroup
             name="paymentType"
@@ -115,7 +122,20 @@ export default function CheckoutPage() {
               { value: "cash", label: "Готівка при полученні" },
             ]}
           />
+
           <div className="max-w-xl  flex flex-col gap-y-5 mt-6">
+            {deliveryType === "post" && (
+              <RHFAutocomplete
+                name="city"
+                options={[
+                  { label: "м.снігу", value: "м.снігу" },
+                  { label: "Київ", value: "київ" },
+                  { label: "микол", value: "микола" },
+                ]}
+                placeholder="Місто"
+              />
+            )}
+
             <RHFInput name="name" placeholder="Ім'я" />
             <RHFInput name="surname" placeholder="Прізвище" />
             <RHFPhoneInput name="phone" />
