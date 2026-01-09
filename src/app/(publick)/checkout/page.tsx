@@ -37,40 +37,53 @@ export default function CheckoutPage() {
     reset,
     handleSubmit,
     watch,
+    setValue,
     formState: { isSubmitting },
   } = methods;
   const deliveryType = watch("deliveryType");
-  const сity = watch("city");
-  async function getNovaPoshta() {
-    const data = {
-      apiKey: "b150f3a9d495cb47a3879d15b8ba1d10",
-      modelName: "AddressGeneral",
-      calledMethod: "searchSettlements",
-      methodProperties: {
-        CityName: "київ", // текст для поиска
-        Limit: "20", // максимальное количество результатов
-        Page: "1", // страница
-      },
-    };
-
-    try {
-      const response = await fetch("https://api.novaposhta.ua/v2.0/json/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      console.log(result);
-      return result.data;
-      // массив городов/населённых пунктов
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  }
+  const city = watch("city");
+  const [cityOptions, setCityOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
   useEffect(() => {
+    async function getNovaPoshta() {
+      const data = {
+        apiKey: "b150f3a9d495cb47a3879d15b8ba1d10",
+        modelName: "AddressGeneral",
+        calledMethod: "searchSettlements",
+        methodProperties: {
+          CityName: city?.label, // текст для поиска
+          Limit: "20", // максимальное количество результатов
+          Page: "1", // страница
+        },
+      };
+
+      try {
+        const response = await fetch("https://api.novaposhta.ua/v2.0/json/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        console.log(result);
+        const cityOptions = result.data[0].Addresses.map((item: any) => ({
+          value: item.Ref, // уникальний код міста
+          label: item.Present, // назва міста
+        }));
+        console.log(cityOptions);
+        setCityOptions(cityOptions);
+
+        return result.data;
+
+        // массив городов/населённых пунктов
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
     getNovaPoshta();
-  }, []);
+    console.log(city);
+  }, [city]);
   useEffect(() => {
     if (!user) return;
 
@@ -127,11 +140,7 @@ export default function CheckoutPage() {
             {deliveryType === "post" && (
               <RHFAutocomplete
                 name="city"
-                options={[
-                  { label: "м.снігу", value: "м.снігу" },
-                  { label: "Київ", value: "київ" },
-                  { label: "микол", value: "микола" },
-                ]}
+                options={cityOptions}
                 placeholder="Місто"
               />
             )}

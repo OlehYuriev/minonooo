@@ -6,7 +6,7 @@ type Props = { name: string; options: Option[]; placeholder: string };
 
 export function RHFAutocomplete({ name, options, placeholder }: Props) {
   const { control } = useFormContext();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState({ label: "", value: "" });
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -28,17 +28,20 @@ export function RHFAutocomplete({ name, options, placeholder }: Props) {
       control={control}
       render={({ field, fieldState: { error } }) => {
         const filteredOptions = options.filter((option) =>
-          option.label.toLowerCase().includes(query.toLowerCase())
+          option.label.toLowerCase().includes(query.label.toLowerCase())
         );
         return (
           <div className="relative">
             <input
-              value={query}
+              value={query.value}
               placeholder={placeholder}
               onChange={(e) => {
-                setQuery(e.target.value);
+                setQuery({ label: e.target.value, value: e.target.value });
                 setOpen(true);
-                field.onChange(null);
+                field.onChange({
+                  label: e.target.value,
+                  value: e.target.value,
+                });
               }}
               className={`w-full border-b py-1.5 text-sm outline-none ${
                 error ? "border-red-500" : "border-[#dadada]"
@@ -57,7 +60,7 @@ export function RHFAutocomplete({ name, options, placeholder }: Props) {
                     type="button"
                     onClick={() => {
                       field.onChange(option);
-                      setQuery(option.label);
+                      setQuery(option);
                       setOpen(false);
                     }}
                     className="hover:bg-gray-100 transition-all p-1.5 w-full  text-start"
