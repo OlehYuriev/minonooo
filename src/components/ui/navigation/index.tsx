@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/auth/hooks/use-auth";
-import { ROUTES } from "@/constants/routes";
+import { AUTH_MENU, LINKS } from "@/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./style.module.css";
@@ -8,26 +8,11 @@ import styles from "./style.module.css";
 type Props = {
   flexCol?: boolean;
 };
-const menuItems = [
-  { title: "Основна інформація", href: ROUTES.DASHBOARD.ROOT },
-  { title: "Профиль", href: "/profile" },
-  { title: "Настройки", href: "/settings" },
-];
 
 export function Navigation({ flexCol = false }: Props) {
   const { user } = useAuth();
   const pathname = usePathname();
 
-  const links = [
-    {
-      name: "Головна",
-      path: ROUTES.HOME,
-    },
-    {
-      name: "Каталог",
-      path: ROUTES.CATALOG,
-    },
-  ];
   return (
     <nav>
       <ul
@@ -35,7 +20,7 @@ export function Navigation({ flexCol = false }: Props) {
           flexCol ? "sm:flex-col " : "sm:flex-row "
         }`}
       >
-        {links.map((link) => (
+        {LINKS.map((link) => (
           <li key={link.name}>
             <Link
               href={link.path}
@@ -49,7 +34,7 @@ export function Navigation({ flexCol = false }: Props) {
         ))}
         {user && (
           <div className={` sm:hidden flex gap-4    flex-col `}>
-            {menuItems.map((link) => (
+            {AUTH_MENU.map((link) => (
               <li key={link.title}>
                 <Link
                   href={link.href}

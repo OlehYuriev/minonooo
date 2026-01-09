@@ -46,7 +46,7 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const avatarCookie = cookieStore.get("avatarUrl")?.value;
-  console.log(avatarCookie);
+
   return (
     <html lang="uk">
       <body

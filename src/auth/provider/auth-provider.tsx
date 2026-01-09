@@ -51,7 +51,6 @@ export function AuthProvider({
         await setAvatarUrlApi(avatarUrl);
         setAvatarUrl(avatarUrl);
         const tokenResult = await user.getIdTokenResult();
-        console.log(tokenResult);
         setRole(tokenResult.claims.role as "admin" | "user");
       } else {
         setUser(null);

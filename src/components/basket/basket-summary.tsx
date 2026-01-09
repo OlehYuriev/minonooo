@@ -1,4 +1,6 @@
+import { ROUTES } from "@/constants/routes";
 import { getTotalPriceProducts } from "@/store/use-basket-store";
+import Link from "next/link";
 import { Button } from "../ui/buttons";
 
 export const BasketSummary = function BasketSummary() {
@@ -8,7 +10,13 @@ export const BasketSummary = function BasketSummary() {
       <span className="text-lg">
         Вартість товару(ів): <strong> {totalPrice.toFixed(2)} грн</strong>
       </span>
-      <Button text="Оформити замовлення" className="mt-5" variant="secondary" />
+      <Link href={ROUTES.CHECKOUT}>
+        <Button
+          text="Оформити замовлення"
+          className="mt-5"
+          variant="secondary"
+        />
+      </Link>
     </div>
   );
 };

@@ -1,14 +1,9 @@
 "use client";
 
 import { useLogout } from "@/auth/hooks/use-logout";
-import { ROUTES } from "@/constants/routes";
+import { AUTH_MENU } from "@/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-const menuItems = [
-  { title: "Основна інформація", href: ROUTES.DASHBOARD.ROOT },
-  { title: "Профиль", href: "/profile" },
-  { title: "Настройки", href: "/settings" },
-];
 
 export function DashboardSidebar() {
   const pathname = usePathname();
@@ -16,7 +11,7 @@ export function DashboardSidebar() {
 
   return (
     <nav className="flex flex-col gap-3 ">
-      {menuItems.map((item) => (
+      {AUTH_MENU.map((item) => (
         <Link
           key={item.href}
           href={item.href}
