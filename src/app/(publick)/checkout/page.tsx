@@ -8,6 +8,7 @@ import { RHFRadioGroup } from "@/components/ui/input/RHFRadioGroup";
 import { Loader } from "@/components/ui/loader";
 import { PageContainer } from "@/layout/page-container";
 import { checkoutSchema, checkoutSchemaType } from "@/sections/checkout/schema";
+import { fetchNp, fetchNpCities } from "@/sections/checkout/utils";
 
 import { fetchUserProfile } from "@/services/user";
 import { toast } from "@/utils/toast";
@@ -29,6 +30,7 @@ export default function CheckoutPage() {
       phone: "",
       deliveryType: "pickup",
       city: null,
+      department: null,
       paymentType: "cash",
     },
   });
@@ -40,50 +42,20 @@ export default function CheckoutPage() {
     setValue,
     formState: { isSubmitting },
   } = methods;
+
   const deliveryType = watch("deliveryType");
-  const city = watch("city");
-  const [cityOptions, setCityOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const cities = watch("city");
+  const department = watch("department");
+
   useEffect(() => {
-    async function getNovaPoshta() {
-      const data = {
-        apiKey: "b150f3a9d495cb47a3879d15b8ba1d10",
-        modelName: "AddressGeneral",
-        calledMethod: "searchSettlements",
-        methodProperties: {
-          CityName: city?.label, // текст для поиска
-          Limit: "20", // максимальное количество результатов
-          Page: "1", // страница
-        },
-      };
-
-      try {
-        const response = await fetch("https://api.novaposhta.ua/v2.0/json/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        const result = await response.json();
-        console.log(result);
-        const cityOptions = result.data[0].Addresses.map((item: any) => ({
-          value: item.Ref, // уникальний код міста
-          label: item.Present, // назва міста
-        }));
-        console.log(cityOptions);
-        setCityOptions(cityOptions);
-
-        return result.data;
-
-        // массив городов/населённых пунктов
-      } catch (error) {
-        console.error(error);
-        return [];
-      }
+    if (deliveryType === "pickup") {
+      setValue("city", null);
     }
-    getNovaPoshta();
-    console.log(city);
-  }, [city]);
+    if (cities === null) {
+      setValue("department", null);
+    }
+  }, [cities, deliveryType, setValue]);
+
   useEffect(() => {
     if (!user) return;
 
@@ -104,6 +76,7 @@ export default function CheckoutPage() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      console.log(data);
       toast("Профіль успішно оновлено!");
     } catch (error) {
       console.error(error);
@@ -140,11 +113,28 @@ export default function CheckoutPage() {
             {deliveryType === "post" && (
               <RHFAutocomplete
                 name="city"
-                options={cityOptions}
+                fetchOptions={fetchNpCities}
                 placeholder="Місто"
               />
             )}
-
+            {deliveryType === "post" && cities?.value && (
+              <div>
+                <RHFAutocomplete
+                  name="department"
+                  fetchOptions={fetchNp}
+                  placeholder="Відділення"
+                  extraParams={{ CityRef: cities?.value }}
+                />
+                <div className="mt-2 flex flex-col gap-1">
+                  {department?.schedule.length &&
+                    department?.schedule.map(({ days, time }, index) => (
+                      <span key={time + index} className=" text-xs">
+                        {days}: <strong>{time}</strong>
+                      </span>
+                    ))}
+                </div>
+              </div>
+            )}
             <RHFInput name="name" placeholder="Ім'я" />
             <RHFInput name="surname" placeholder="Прізвище" />
             <RHFPhoneInput name="phone" />

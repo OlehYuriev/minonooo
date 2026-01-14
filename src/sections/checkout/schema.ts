@@ -11,6 +11,18 @@ export const checkoutSchema = z
         value: z.string(),
       })
       .nullable(),
+    department: z
+      .object({
+        label: z.string(),
+        value: z.string(),
+        schedule: z.array(
+          z.object({
+            days: z.string(),
+            time: z.string(),
+          })
+        ),
+      })
+      .nullable(),
 
     paymentType: z.enum(["card", "cash"], {
       message: "Виберіть спосіб оплати",
@@ -25,9 +37,16 @@ export const checkoutSchema = z
         "Номер має бути у форматі +380 (XX) XXX-XX-XX"
       ),
   })
-  .refine((data) => data.deliveryType === "post" || data.city, {
+  .refine((data) => !(data.deliveryType === "post" && data.city === null), {
     message: "Виберіть місто доставки",
     path: ["city"],
-  });
+  })
+  .refine(
+    (data) => !(data.deliveryType === "post" && data.department === null),
+    {
+      message: "Виберіть відділення",
+      path: ["department"],
+    }
+  );
 
 export type checkoutSchemaType = z.infer<typeof checkoutSchema>;
