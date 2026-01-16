@@ -1,5 +1,5 @@
-import { products } from "@/data/product";
 import { useFuseSearch } from "@/hooks/use-fuse-search";
+import { useProductStore } from "@/store/product-store";
 import { IProduct } from "@/type/product";
 type Props = {
   open: boolean;
@@ -13,6 +13,7 @@ export function SearchList({
   setSearchQuery,
   searchQuery,
 }: Props) {
+  const { products } = useProductStore();
   const filteredSearchProducts = useFuseSearch<IProduct>(
     products,
     ["name"],

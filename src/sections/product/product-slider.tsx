@@ -53,7 +53,7 @@ export default function ProductSlider({ product, colorProduct }: Props) {
           {productSlider &&
             productSlider.map((image, index) => (
               <SwiperSlide
-                key={image}
+                key={image + index}
                 className={`cursor-pointer f-full h-[90px] ${
                   index === currentIndex ? "border-2 border-[#6f6f6f] " : ""
                 }`}
@@ -61,9 +61,9 @@ export default function ProductSlider({ product, colorProduct }: Props) {
                 <Image
                   src={image}
                   alt={product.name || "фото"}
-                  width={170}
-                  height={90}
-                  className="object-cover w-full h-full"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="90px"
                 />
               </SwiperSlide>
             ))}
@@ -90,17 +90,18 @@ export default function ProductSlider({ product, colorProduct }: Props) {
           effect="fade"
           modules={[FreeMode, Navigation, Thumbs, Pagination, EffectFade]}
           onSlideChange={handleSlideChange}
-          className="flex-shrink-1   md:h-[40vw] max-h-[590px]"
+          className="relative w-full h-[590px] md:h-[40vw] max-h-[590px]"
         >
           {productSlider &&
-            productSlider.map((image) => (
-              <SwiperSlide key={image}>
+            productSlider.map((image, index) => (
+              <SwiperSlide key={image + index}>
                 <Image
                   src={image}
                   alt={product.name || "фото"}
-                  width={170}
-                  height={590}
-                  className="object-cover w-full h-full"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
                 />
               </SwiperSlide>
             ))}

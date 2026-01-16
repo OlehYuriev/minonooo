@@ -1,18 +1,17 @@
 import { ProductSlider } from "@/components/product-slider";
-import { products } from "@/data/product";
 import { PageContainer } from "@/layout/page-container";
 
 import { ProductOverview } from "@/sections/product";
-import { use } from "react";
+import { getProductServer } from "@/services/products";
 
-export default function ProductItem({
+export default async function ProductItem({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
-  const product = products.find((item) => item.id === Number(id));
-
+  const { id } = await params;
+  const product = await getProductServer(id);
+  if (!product) return <h1>Продукт не знайдено</h1>;
   return (
     <PageContainer>
       <ProductOverview product={product} />

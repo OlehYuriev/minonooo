@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     order_id: orderId,
     sandbox: 1, // тестовый режим
     result_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/checkout`,
-    server_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/api/liqpay-webhook`,
+    //  server_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/api/liqpay-webhook`,
   };
 
   const data = Buffer.from(JSON.stringify(payment)).toString("base64");

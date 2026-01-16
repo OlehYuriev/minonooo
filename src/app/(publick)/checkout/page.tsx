@@ -101,6 +101,7 @@ export default function CheckoutPage() {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log(data);
     try {
       pay(Number(discountPrice));
       toast("Профіль успішно оновлено!");

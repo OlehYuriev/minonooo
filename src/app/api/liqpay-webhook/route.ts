@@ -1,9 +1,6 @@
 // src/app/api/liqpay-webhook/route.ts
 import crypto from "crypto";
 
-let lastPaymentStatus: "pending" | "success" | "failure" = "pending";
-export const getLastPaymentStatus = () => lastPaymentStatus;
-
 export async function POST(req: Request) {
   try {
     // читаем body как текст
@@ -32,9 +29,6 @@ export async function POST(req: Request) {
       Buffer.from(data, "base64").toString("utf-8")
     );
     console.log("💰 Webhook received:", paymentResult);
-
-    if (paymentResult.status === "sandbox") lastPaymentStatus = "success";
-    else lastPaymentStatus = "failure";
 
     return new Response("OK", { status: 200 });
   } catch (err) {

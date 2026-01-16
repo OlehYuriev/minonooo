@@ -4,15 +4,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { memo, useMemo } from "react";
 type Props = {
   filteredProducts: IProduct[];
-  visibleCount: number;
+
   sortOrder: "asc" | "desc";
 };
 export const GridProducts = memo(function GridProducts({
   filteredProducts,
-  visibleCount,
   sortOrder,
 }: Props) {
-  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const visibleProducts = filteredProducts;
   const sortedProducts = useMemo(() => {
     return [...visibleProducts].sort((a, b) =>
       sortOrder === "asc"

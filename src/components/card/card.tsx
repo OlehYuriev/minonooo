@@ -53,9 +53,9 @@ export const Card = memo(function Card({ product }: CardProps) {
           <h4>{product.name}</h4>
           <p>{product.price} грн.</p>
           <div className="flex gap-x-1.5 mt-1">
-            {product.variants.map((variant) => (
+            {product.variants.map((variant, index) => (
               <span
-                key={variant.colorName}
+                key={variant.colorName + index}
                 className={`w-[1.2rem] h-[1.2rem] rounded-4xl border border-neutral-300`}
                 style={{ backgroundColor: variant.colorCode }}
               ></span>
