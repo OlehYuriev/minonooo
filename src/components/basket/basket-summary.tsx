@@ -1,10 +1,10 @@
 import { ROUTES } from "@/constants/routes";
-import { getTotalPriceProducts } from "@/store/use-basket-store";
+import { useTotalPrice } from "@/store/use-basket-store";
 import Link from "next/link";
 import { Button } from "../ui/buttons";
 
 export const BasketSummary = function BasketSummary() {
-  const totalPrice = getTotalPriceProducts();
+  const totalPrice = useTotalPrice();
   return (
     <div>
       <span className="text-lg">

@@ -34,19 +34,13 @@ export const GridProducts = memo(function GridProducts({
           }`}
         >
           <div
-            className={`${
-              (index + 1) % 5 === 0 ? "col-span-2 flex justify-center" : ""
+            className={` ${
+              (index + 1) % 5 === 0
+                ? " sm:mx-20 md:mx-40 lg:mx-65 w-full aspect-[2/3.1] sm:aspect-[2/2.38]"
+                : "aspect-[2/3.1] sm:aspect-[2/2.38]"
             }`}
           >
-            <div
-              className={` ${
-                (index + 1) % 5 === 0
-                  ? " sm:mx-20 md:mx-40 lg:mx-54 w-full aspect-[2/2.8] sm:aspect-[2/2.5]"
-                  : "aspect-[2/3.1] sm:aspect-[2/2.38]"
-              }`}
-            >
-              <Card product={product} />
-            </div>
+            <Card product={product} />
           </div>
         </motion.div>
       ))}

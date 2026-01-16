@@ -11,6 +11,7 @@ import { checkoutSchema, checkoutSchemaType } from "@/sections/checkout/schema";
 import { fetchNp, fetchNpCities } from "@/sections/checkout/utils";
 
 import { fetchUserProfile } from "@/services/user";
+import { useTotalPrice } from "@/store/use-basket-store";
 import { toast } from "@/utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -19,6 +20,10 @@ import { useForm } from "react-hook-form";
 export default function CheckoutPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const totalPrice = useTotalPrice();
+
+  const discountPrice =
+    totalPrice >= 1000 ? (totalPrice * 0.9).toFixed(2) : totalPrice.toFixed(2);
 
   const methods = useForm<checkoutSchemaType>({
     mode: "onSubmit",
@@ -74,9 +79,30 @@ export default function CheckoutPage() {
     loadProfile();
   }, [user, reset]);
 
+  const pay = async (amount: number) => {
+    const res = await fetch("/api/liqpay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount }), // передаём сумму
+    });
+    const { data, signature } = await res.json();
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "https://www.liqpay.ua/api/3/checkout";
+
+    form.innerHTML = `
+      <input type="hidden" name="data" value="${data}" />
+      <input type="hidden" name="signature" value="${signature}" />
+    `;
+
+    document.body.appendChild(form);
+    form.submit();
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log(data);
+      pay(Number(discountPrice));
       toast("Профіль успішно оновлено!");
     } catch (error) {
       console.error(error);
@@ -89,68 +115,96 @@ export default function CheckoutPage() {
       {loading && <Loader />}
       <PageContainer>
         <h1 className="text-3xl font-medium mt-17">Оформлення замовлення</h1>
-
-        <Form methods={methods} onSubmit={onSubmit}>
-          <h3 className="my-9 text-lg">Спосіб доставки</h3>
-          <RHFRadioGroup
-            name="deliveryType"
-            options={[
-              { value: "pickup", label: "Самовивіз" },
-              { value: "post", label: "Доставка поштою" },
-            ]}
-          />
-
-          <h3 className="my-9 text-lg">Спосіб оплати</h3>
-          <RHFRadioGroup
-            name="paymentType"
-            options={[
-              { value: "card", label: "Картка" },
-              { value: "cash", label: "Готівка при полученні" },
-            ]}
-          />
-
-          <div className="max-w-xl  flex flex-col gap-y-5 mt-6">
-            {deliveryType === "post" && (
-              <RHFAutocomplete
-                name="city"
-                fetchOptions={fetchNpCities}
-                placeholder="Місто"
+        <div className="flex gap-5 my-9">
+          <div className="basis-1/2">
+            <Form methods={methods} onSubmit={onSubmit}>
+              <h3 className=" text-lg mb-9">Спосіб доставки</h3>
+              <RHFRadioGroup
+                name="deliveryType"
+                options={[
+                  { value: "pickup", label: "Самовивіз" },
+                  { value: "post", label: "Доставка поштою" },
+                ]}
               />
-            )}
-            {deliveryType === "post" && cities?.value && (
-              <div>
-                <RHFAutocomplete
-                  name="department"
-                  fetchOptions={fetchNp}
-                  placeholder="Відділення"
-                  extraParams={{ CityRef: cities?.value }}
-                />
-                <div className="mt-2 flex flex-col gap-1">
-                  {department?.schedule.length &&
-                    department?.schedule.map(({ days, time }, index) => (
-                      <span key={time + index} className=" text-xs">
-                        {days}: <strong>{time}</strong>
-                      </span>
-                    ))}
+              <div className="flex flex-col gap-y-5 mt-6">
+                {deliveryType === "post" && (
+                  <RHFAutocomplete
+                    name="city"
+                    fetchOptions={fetchNpCities}
+                    placeholder="Місто"
+                  />
+                )}
+
+                {deliveryType === "post" && cities?.value && (
+                  <div>
+                    <RHFAutocomplete
+                      name="department"
+                      fetchOptions={fetchNp}
+                      placeholder="Відділення"
+                      extraParams={{ CityRef: cities?.value }}
+                    />
+                    <div className="mt-2 flex flex-col gap-1">
+                      {department?.schedule.length &&
+                        department?.schedule.map(({ days, time }, index) => (
+                          <span key={time + index} className=" text-xs">
+                            {days}: <strong>{time}</strong>
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <h3 className="my-9 text-lg">Спосіб оплати</h3>
+              <RHFRadioGroup
+                name="paymentType"
+                options={[
+                  { value: "card", label: "Картка" },
+                  { value: "cash", label: "Готівка при полученні" },
+                ]}
+              />
+
+              <div className="flex flex-col gap-y-5 mt-6">
+                <RHFInput name="name" placeholder="Ім'я" />
+                <RHFInput name="surname" placeholder="Прізвище" />
+                <RHFPhoneInput name="phone" />
+                <RHFInput name="email" placeholder="Email" />
+
+                <div className="max-w-2xs">
+                  <Button
+                    text="Оформити замовлення"
+                    type="submit"
+                    variant="secondary"
+                    className="!py-4"
+                    loading={isSubmitting}
+                  />
                 </div>
               </div>
-            )}
-            <RHFInput name="name" placeholder="Ім'я" />
-            <RHFInput name="surname" placeholder="Прізвище" />
-            <RHFPhoneInput name="phone" />
-            <RHFInput name="email" placeholder="Email" />
-
-            <div className="max-w-2xs">
-              <Button
-                text="Оформити замовлення"
-                type="submit"
-                variant="primary"
-                className="!py-4"
-                loading={isSubmitting}
-              />
+            </Form>
+          </div>
+          <div className="basis-1/2 flex items-center flex-col gap-4">
+            <div className="flex justify-between max-w-lg w-full">
+              <span>Загальна вартість</span>
+              <span>{totalPrice.toFixed(2)} грн</span>
+            </div>
+            <div className="flex justify-between max-w-lg w-full">
+              <span>Знижка</span>
+              <span>{totalPrice >= 1000 ? "10" : "0"}%</span>
+            </div>
+            <div className="flex justify-between max-w-lg w-full border-y py-7 font-bold">
+              <span>Разом</span>
+              <span>{discountPrice} грн</span>
+            </div>
+            <div
+              className="flex items-center gap-2 max-w-lg p-2
+				 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800"
+            >
+              <span>
+                Знижка 10% нараховується якщо вартість товару 1000 грн або
+                більше
+              </span>
             </div>
           </div>
-        </Form>
+        </div>
       </PageContainer>
     </>
   );
