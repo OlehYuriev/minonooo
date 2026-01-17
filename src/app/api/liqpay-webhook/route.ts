@@ -1,15 +1,14 @@
-// src/app/api/liqpay-webhook/route.ts
+import { adminDb } from "@/firebase-admin";
 import crypto from "crypto";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  console.log("sd");
   try {
-    // читаем body как текст
-    const bodyText = await req.text();
+    const formData = await req.formData();
 
-    // парсим x-www-form-urlencoded
-    const params = new URLSearchParams(bodyText);
-    const data = params.get("data")!;
-    const signature = params.get("signature")!;
+    const data = formData.get("data") as string;
+    const signature = formData.get("signature") as string;
 
     const expectedSignature = crypto
       .createHash("sha1")
@@ -21,18 +20,60 @@ export async function POST(req: Request) {
       .digest("base64");
 
     if (signature !== expectedSignature) {
-      console.log("⚠️ Invalid signature");
-      return new Response("Invalid signature", { status: 400 });
+      return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
     }
 
-    const paymentResult = JSON.parse(
-      Buffer.from(data, "base64").toString("utf-8")
-    );
-    console.log("💰 Webhook received:", paymentResult);
+    const payload = JSON.parse(Buffer.from(data, "base64").toString("utf-8"));
 
-    return new Response("OK", { status: 200 });
-  } catch (err) {
-    console.error(err);
-    return new Response("Error", { status: 500 });
+    const { order_id, status, amount, currency, transaction_id, info } =
+      payload;
+    let userId = "anon"; // дефолт для гостей
+    if (info) {
+      try {
+        const parsedInfo = JSON.parse(info);
+        if (parsedInfo.userId) {
+          userId = parsedInfo.userId;
+        }
+      } catch (err) {
+        console.warn("Не удалось распарсить info:", err);
+      }
+    }
+
+    console.log("info userId:", userId);
+    // 👉 заказ лежит тут
+    const orderRef = adminDb
+      .collection("orders")
+      .doc(userId)
+      .collection("userOrders")
+      .doc(order_id);
+    const orderSnap = await orderRef.get();
+
+    if (!orderSnap.exists) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    if (status === "success" || status === "sandbox") {
+      await orderRef.update({
+        status: "success",
+        paidAt: new Date(),
+        payment: {
+          provider: "liqpay",
+          transactionId: transaction_id,
+          amount,
+          currency,
+          rawStatus: status,
+        },
+      });
+    } else {
+      await orderRef.update({
+        status: "failed",
+        liqpayStatus: status,
+      });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("LIQPAY WEBHOOK ERROR:", error);
+    return NextResponse.json({ error: "Webhook error" }, { status: 500 });
   }
 }

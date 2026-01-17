@@ -16,6 +16,7 @@ export function HeaderButtons() {
   const { user, avatarUrl } = useAuth();
 
   const cart = useCart();
+
   const favoriteCarts = useFavoriteCart();
   const toggleBasket = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();

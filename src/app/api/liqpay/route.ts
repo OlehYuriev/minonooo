@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const body = await req.json();
   const amount = body.amount || 1;
-  const orderId = `order_${Date.now()}`;
-
+  const orderId = body.orderId || "";
+  const userId = body.userId || "anon";
   // 👇 создаём объект платежа
   const payment = {
     public_key: "sandbox_i74671435868",
@@ -15,9 +15,12 @@ export async function POST(req: Request) {
     currency: "UAH",
     description: "За товар",
     order_id: orderId,
+    info: JSON.stringify({
+      userId: userId ?? "anon",
+    }),
     sandbox: 1, // тестовый режим
     result_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/checkout`,
-    //  server_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/api/liqpay-webhook`,
+    server_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/api/liqpay-webhook`,
   };
 
   const data = Buffer.from(JSON.stringify(payment)).toString("base64");

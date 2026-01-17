@@ -30,6 +30,6 @@ export async function getProductsServer(): Promise<IProduct[]> {
     id: doc.id,
     ...doc.data(),
   })) as unknown as IProduct[];
-  console.log(products);
+
   return products;
 }

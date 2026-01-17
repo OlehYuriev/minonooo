@@ -11,7 +11,7 @@ import { checkoutSchema, checkoutSchemaType } from "@/sections/checkout/schema";
 import { fetchNp, fetchNpCities } from "@/sections/checkout/utils";
 
 import { fetchUserProfile } from "@/services/user";
-import { useTotalPrice } from "@/store/use-basket-store";
+import { useCart, useTotalPrice } from "@/store/use-basket-store";
 import { toast } from "@/utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -21,7 +21,7 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const totalPrice = useTotalPrice();
-
+  const cart = useCart();
   const discountPrice =
     totalPrice >= 1000 ? (totalPrice * 0.9).toFixed(2) : totalPrice.toFixed(2);
 
@@ -79,11 +79,11 @@ export default function CheckoutPage() {
     loadProfile();
   }, [user, reset]);
 
-  const pay = async (amount: number) => {
+  const pay = async (amount: number, orderId: string, userId: string) => {
     const res = await fetch("/api/liqpay", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount }), // передаём сумму
+      body: JSON.stringify({ amount, orderId, userId }), // передаём сумму
     });
     const { data, signature } = await res.json();
 
@@ -103,7 +103,20 @@ export default function CheckoutPage() {
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
     try {
-      pay(Number(discountPrice));
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: Number(discountPrice),
+          userId: user?.uid || "anon",
+          items: cart,
+          /* contacts: formData, */
+        }),
+      });
+
+      const { orderId } = await res.json();
+      const userId = user?.uid;
+      await pay(Number(discountPrice), orderId, userId);
       toast("Профіль успішно оновлено!");
     } catch (error) {
       console.error(error);

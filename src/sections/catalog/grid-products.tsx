@@ -1,27 +1,20 @@
 import { Card } from "@/components/card";
 import { IProduct } from "@/type/product";
 import { AnimatePresence, motion } from "framer-motion";
-import { memo, useMemo } from "react";
+import { memo } from "react";
 type Props = {
   filteredProducts: IProduct[];
-
-  sortOrder: "asc" | "desc";
+  visibleCount: number;
 };
 export const GridProducts = memo(function GridProducts({
   filteredProducts,
-  sortOrder,
+  visibleCount,
 }: Props) {
-  const visibleProducts = filteredProducts;
-  const sortedProducts = useMemo(() => {
-    return [...visibleProducts].sort((a, b) =>
-      sortOrder === "asc"
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    );
-  }, [sortOrder, visibleProducts]);
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+
   return (
     <AnimatePresence mode="popLayout">
-      {sortedProducts.map((product, index) => (
+      {visibleProducts.map((product, index) => (
         <motion.div
           key={product.id}
           initial={{ opacity: 0, y: 20 }}
