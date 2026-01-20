@@ -5,21 +5,18 @@ export async function POST(req: Request) {
   const body = await req.json();
   const amount = body.amount || 1;
   const orderId = body.orderId || "";
-  const userId = body.userId || "anon";
+
   // 👇 создаём объект платежа
   const payment = {
     public_key: "sandbox_i74671435868",
     version: 3,
     action: "pay",
-    amount: amount, // сумма в UAH
+    amount,
     currency: "UAH",
     description: "За товар",
     order_id: orderId,
-    info: JSON.stringify({
-      userId: userId ?? "anon",
-    }),
     sandbox: 1, // тестовый режим
-    result_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/checkout`,
+    result_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/checkout?orderId=${orderId}`,
     server_url: `https://transrationally-unsating-mercedez.ngrok-free.dev/api/liqpay-webhook`,
   };
 

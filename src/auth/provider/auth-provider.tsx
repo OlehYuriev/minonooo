@@ -43,28 +43,34 @@ export function AuthProvider({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setLoading(true);
-      if (user) {
-        setUser(user);
-        const avatarUrl = user.photoURL;
+      try {
+        setLoading(true);
+        if (user) {
+          setUser(user);
+          const avatarUrl = user.photoURL || null;
 
-        await setAvatarUrlApi(avatarUrl);
-        setAvatarUrl(avatarUrl);
-        const tokenResult = await user.getIdTokenResult();
-        setRole(tokenResult.claims.role as "admin" | "user");
-      } else {
-        setUser(null);
+          await setAvatarUrlApi(avatarUrl);
+          setAvatarUrl(avatarUrl);
 
-        await setAvatarUrlApi(null);
-        setAvatarUrl(null);
-        setRole(null);
+          const tokenResult = await user.getIdTokenResult();
+          setRole(tokenResult.claims.role as "admin" | "user");
+        } else {
+          setUser(null);
+
+          await setAvatarUrlApi(null);
+          setAvatarUrl(null);
+          setRole(null);
+        }
+      } catch (error) {
+        console.error("Помилка при виході:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+
   return (
     <AuthContext.Provider
       value={{ user, loading, role, setUser, setRole, avatarUrl, setAvatarUrl }}

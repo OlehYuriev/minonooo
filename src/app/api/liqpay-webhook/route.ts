@@ -3,7 +3,6 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  console.log("sd");
   try {
     const formData = await req.formData();
 
@@ -25,27 +24,20 @@ export async function POST(req: Request) {
 
     const payload = JSON.parse(Buffer.from(data, "base64").toString("utf-8"));
 
-    const { order_id, status, amount, currency, transaction_id, info } =
-      payload;
-    let userId = "anon"; // дефолт для гостей
-    if (info) {
-      try {
-        const parsedInfo = JSON.parse(info);
-        if (parsedInfo.userId) {
-          userId = parsedInfo.userId;
-        }
-      } catch (err) {
-        console.warn("Не удалось распарсить info:", err);
-      }
-    }
+    const {
+      order_id,
+      status,
+      amount,
+      currency,
+      transaction_id,
+      sender_card_mask2,
+      sender_first_name,
+      sender_last_name,
+      sender_card_bank,
+      sender_card_type,
+    } = payload;
 
-    console.log("info userId:", userId);
-    // 👉 заказ лежит тут
-    const orderRef = adminDb
-      .collection("orders")
-      .doc(userId)
-      .collection("userOrders")
-      .doc(order_id);
+    const orderRef = adminDb.collection("orders").doc(order_id);
     const orderSnap = await orderRef.get();
 
     if (!orderSnap.exists) {
@@ -54,13 +46,18 @@ export async function POST(req: Request) {
 
     if (status === "success" || status === "sandbox") {
       await orderRef.update({
-        status: "success",
+        status: "paid",
         paidAt: new Date(),
         payment: {
           provider: "liqpay",
           transactionId: transaction_id,
           amount,
           currency,
+          sender_first_name: sender_first_name || "",
+          sender_last_name: sender_last_name || "",
+          sender_card_mask2: sender_card_mask2 || "",
+          sender_card_bank: sender_card_bank || "",
+          sender_card_type: sender_card_type || "",
           rawStatus: status,
         },
       });

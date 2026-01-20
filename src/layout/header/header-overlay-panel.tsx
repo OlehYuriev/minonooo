@@ -33,7 +33,7 @@ export function HeaderOverlayPanel({
         </div>
         {footerSummary && (
           <div className="pt-2">
-            <BasketSummary />
+            <BasketSummary close={close} />
           </div>
         )}
       </div>

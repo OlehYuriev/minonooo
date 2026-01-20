@@ -48,7 +48,6 @@ export function ProfileInfoForm() {
     formState: { isSubmitting },
   } = methods;
   useEffect(() => {
-    console.log(user);
     if (!user) return;
 
     const loadProfile = async () => {

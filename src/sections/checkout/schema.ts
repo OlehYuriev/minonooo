@@ -2,9 +2,12 @@ import { z } from "zod";
 
 export const checkoutSchema = z
   .object({
-    deliveryType: z.enum(["pickup", "post"], {
-      message: "Виберіть спосіб доставки",
-    }),
+    deliveryType: z.enum(
+      ["pickup", "post", "Самовивіз", "Достаавка Новою Поштою"],
+      {
+        message: "Виберіть спосіб доставки",
+      }
+    ),
     city: z
       .object({
         label: z.string(),
@@ -24,7 +27,7 @@ export const checkoutSchema = z
       })
       .nullable(),
 
-    paymentType: z.enum(["card", "cash"], {
+    paymentType: z.enum(["card", "cash", "Карта", "Готівка"], {
       message: "Виберіть спосіб оплати",
     }),
     name: z.string().trim().min(2, "ім'я обов'язкове!"),

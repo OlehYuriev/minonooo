@@ -10,6 +10,7 @@ type Action = {
   addQuantity: (id: number, size: string, color: string) => void;
   decreaseQuantity: (id: number, size: string, color: string) => void;
   removeFromCart: (id: number, size: string, color: string) => void;
+  clearCart: () => void;
 };
 
 const initialState: State = {
@@ -102,6 +103,7 @@ const useBasketStore = create<State & Action>()(
         );
         set({ cart: updatedCart });
       },
+      clearCart: () => set({ cart: [] }),
     }),
 
     {
@@ -123,6 +125,7 @@ export const useTotalPrice = () =>
 
 export const addToCartProduct = (product: CartItem) =>
   useBasketStore.getState().addToCart(product);
+
 export const addQuantityProduct = (id: number, size: string, color: string) =>
   useBasketStore.getState().addQuantity(id, size, color);
 
@@ -137,3 +140,5 @@ export const removeFromCartProduct = (
   size: string,
   color: string
 ) => useBasketStore.getState().removeFromCart(id, size, color);
+
+export const clearCart = () => useBasketStore.getState().clearCart();

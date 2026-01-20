@@ -39,9 +39,9 @@ export async function fetchUserProfile(uid: string) {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    return docSnap.data(); // вернёт объект {login, name, surname, phone, email}
+    return docSnap.data();
   } else {
-    return null; // документ не найден
+    return null;
   }
 }
 
