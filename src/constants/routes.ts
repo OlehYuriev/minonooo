@@ -8,5 +8,6 @@ export const ROUTES = {
   REGISTER: "/register",
   DASHBOARD: {
     ROOT: "/dashboard/profile",
+    ORDERS: "/dashboard/orders",
   },
 };

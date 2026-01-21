@@ -1,7 +1,7 @@
 import { CartItem } from "@/type/product";
 import { checkoutSchemaType } from "../schema";
 
-type CheckoutFormData = Omit<checkoutSchemaType, "city" | "department"> &
+export type CheckoutFormData = Omit<checkoutSchemaType, "city" | "department"> &
   Partial<Pick<checkoutSchemaType, "city" | "department">>;
 
 export function formatOrderData(data: checkoutSchemaType): CheckoutFormData {
