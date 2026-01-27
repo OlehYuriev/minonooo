@@ -15,7 +15,7 @@ export function ProductOverview({ product }: Props) {
 
   return (
     <div className="flex mt-25 gap-x-18  gap-y-10  md:flex-row flex-col">
-      <div className="md:w-[55%]">
+      <div className="md:w-[45%]">
         <ProductSlider product={product} colorProduct={colorProduct} />
       </div>
       <ProductDetails

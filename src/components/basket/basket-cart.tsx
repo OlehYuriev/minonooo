@@ -23,9 +23,9 @@ export const BasketCart = memo(function BasketCart({ item }: Props) {
   }, [item.id, item.quantity, item.selectedColor, item.selectedSize]);
 
   const handleRemoveFromCart = useCallback(() => {
-    console.log(item.id, item.selectedSize);
     removeFromCartProduct(item.id, item.selectedSize, item.selectedColor);
   }, [item.id, item.selectedColor, item.selectedSize]);
+
   return (
     <div className=" flex gap-x-5 " key={item.id}>
       <div>

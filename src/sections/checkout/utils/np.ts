@@ -4,10 +4,10 @@ import { transformSchedule } from "@/utils/transform-schedule";
 
 export function createNovaPoshtaRequestBody<T extends object>(
   calledMethod: string,
-  params: T
+  params: T,
 ) {
   const data = {
-    apiKey: "b150f3a9d495cb47a3879d15b8ba1d10",
+    apiKey: process.env.NEXT_PUBLIC_NP_KEY,
     modelName: "AddressGeneral",
     calledMethod: calledMethod,
     methodProperties: params,
@@ -29,7 +29,7 @@ export const fetchNpCities: FetchOptions = async ({ query, limit, page }) => {
       (item: Record<string, string>) => ({
         value: item.DeliveryCity,
         label: item.Present,
-      })
+      }),
     );
 
     return cityOptions;

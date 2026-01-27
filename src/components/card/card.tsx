@@ -37,6 +37,7 @@ export const Card = memo(function Card({ product }: CardProps) {
             <BasketIcon className="w-5" fill={basket ? "white" : "#2D2D2D"} />
           </IconToggleButton>
         </div>
+
         <div className="relative flex-1 w-full">
           <Link href={ROUTES.PRODUCT(product.id)}>
             <Image

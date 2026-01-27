@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // Import Swiper React components
 import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
 // Import Swiper styles
@@ -30,13 +30,23 @@ export default function ProductSlider({ product, colorProduct }: Props) {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const mainSwiperRef = useRef<SwiperType | null>(null);
   const handleSlideChange = (swiper: SwiperClass) => {
     setCurrentIndex(swiper.realIndex);
-    console.log(swiper.realIndex);
   };
   const productSlider = product?.variants?.find(
-    (variant) => variant.colorName === colorProduct.colorName
+    (variant) => variant.colorName === colorProduct.colorName,
   )?.image;
+
+  useEffect(() => {
+    setCurrentIndex(0);
+    if (thumbsSwiper && mainSwiperRef.current) {
+      thumbsSwiper.slideTo(0, 0);
+      mainSwiperRef.current.slideTo(0, 0);
+      mainSwiperRef.current.update();
+      thumbsSwiper.update();
+    }
+  }, [colorProduct.colorName, thumbsSwiper]);
   return (
     <>
       <div className="flex gap-x-2.5">
@@ -44,7 +54,6 @@ export default function ProductSlider({ product, colorProduct }: Props) {
           onSwiper={setThumbsSwiper}
           spaceBetween={10}
           slidesPerView={4}
-          freeMode={true}
           direction="vertical"
           watchSlidesProgress={true}
           modules={[FreeMode, Navigation, Thumbs]}
@@ -69,6 +78,7 @@ export default function ProductSlider({ product, colorProduct }: Props) {
             ))}
         </Swiper>
         <Swiper
+          onSwiper={(swiper) => (mainSwiperRef.current = swiper)}
           spaceBetween={10}
           navigation={{
             nextEl: ".custom-next",
@@ -90,17 +100,20 @@ export default function ProductSlider({ product, colorProduct }: Props) {
           effect="fade"
           modules={[FreeMode, Navigation, Thumbs, Pagination, EffectFade]}
           onSlideChange={handleSlideChange}
-          className="relative w-full h-[590px] md:h-[40vw] max-h-[590px]"
         >
           {productSlider &&
             productSlider.map((image, index) => (
-              <SwiperSlide key={image + index}>
+              <SwiperSlide
+                key={image + index}
+                className="flex justify-center items-center"
+              >
                 <Image
                   src={image}
                   alt={product.name || "фото"}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  width={1200}
+                  height={1200}
+                  className="w-full max-h-[590px] h-auto object-contain"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 50vw"
                   priority
                 />
               </SwiperSlide>

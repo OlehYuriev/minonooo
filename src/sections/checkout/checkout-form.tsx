@@ -5,13 +5,16 @@ import { RHFInput, RHFPhoneInput } from "@/components/ui/input";
 import { RHFRadioGroup } from "@/components/ui/input/RHFRadioGroup";
 import { checkoutSchema, checkoutSchemaType } from "@/sections/checkout/schema";
 
+import { ROUTES } from "@/constants/routes";
 import { fetchUserProfile } from "@/services/user";
-import { clearCart, useCart } from "@/store/use-basket-store";
+import { useCart } from "@/store/use-basket-store";
 import { CartItem } from "@/type/product";
 import { pay } from "@/utils/liqpay.ts";
 import { toast } from "@/utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "firebase/auth";
+
+import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { DeliverySection } from "./delivery-section";
@@ -31,6 +34,7 @@ export default function CheckoutForm({
 }: Props) {
   const cart = useCart();
 
+  const router = useRouter();
   const methods = useForm<checkoutSchemaType>({
     mode: "onSubmit",
     resolver: zodResolver(checkoutSchema),
@@ -81,7 +85,7 @@ export default function CheckoutForm({
 
     const itemsForServer: Omit<CartItem, "variants">[] = cart.map(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-      ({ variants, ...rest }) => rest
+      ({ variants, ...rest }) => rest,
     );
 
     try {
@@ -92,11 +96,15 @@ export default function CheckoutForm({
         formData,
         itemsForServer,
       });
+
       if (data.paymentType === "card") {
-        await pay(Number(discountPrice), orderId);
+        await pay(Number(discountPrice), orderId, user?.uid || "anon");
       } else {
         toast("Заказ оформлено!");
-        clearCart();
+        const link = user?.uid
+          ? `${ROUTES.DASHBOARD.ORDERS}?orderId=${orderId}`
+          : `${ROUTES.CATALOG}?orderId=${orderId}`;
+        router.push(link);
       }
     } catch (error) {
       console.error(error);

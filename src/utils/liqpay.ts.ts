@@ -1,8 +1,8 @@
-export const pay = async (amount: number, orderId: string) => {
+export const pay = async (amount: number, orderId: string, userId: string) => {
   const res = await fetch("/api/liqpay", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount, orderId }),
+    body: JSON.stringify({ amount, orderId, userId }),
   });
   const { data, signature } = await res.json();
 

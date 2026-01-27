@@ -17,6 +17,7 @@ export function ModalCard({ open, setOpen, product }: Props) {
     colorName: product?.variants[0]?.colorName,
     colorCode: product?.variants[0]?.colorCode,
   });
+
   const hendleSize = (size: string) => {
     setSizeProduct(size);
   };
@@ -27,8 +28,13 @@ export function ModalCard({ open, setOpen, product }: Props) {
 
   const handleAdd = () => {
     if (!sizeProduct || !colorProduct) return;
+    const colorProductImg = product?.variants?.find(
+      (variant) => variant.colorName === colorProduct.colorName,
+    );
+
     addToCartProduct({
       ...product,
+      image: colorProductImg?.image ? colorProductImg?.image[0] : product.image,
       quantity: 1,
       totalPrice: product.price,
       selectedSize: sizeProduct,

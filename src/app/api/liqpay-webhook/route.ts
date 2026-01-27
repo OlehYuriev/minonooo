@@ -12,9 +12,9 @@ export async function POST(req: Request) {
     const expectedSignature = crypto
       .createHash("sha1")
       .update(
-        "sandbox_Zq5SNZnD8FH8u6eMYY71z1MlBNtghVcrkpFn84h1" +
+        process.env.NEXT_PUBLIC_LIQPAY_PRIVATE_KEY +
           data +
-          "sandbox_Zq5SNZnD8FH8u6eMYY71z1MlBNtghVcrkpFn84h1"
+          process.env.NEXT_PUBLIC_LIQPAY_PRIVATE_KEY,
       )
       .digest("base64");
 
