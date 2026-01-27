@@ -19,9 +19,9 @@ export async function POST(req: Request) {
     sandbox: 1, // тестовый режим
     result_url:
       userId !== "anon"
-        ? `${process.env.NEXT_PUBLIC_URL}/dashboard/orders?orderId=${orderId}`
-        : `${process.env.NEXT_PUBLIC_URL}/catalog?orderId=${orderId}`,
-    server_url: `${process.env.NEXT_PUBLIC_URL}/api/liqpay-webhook`,
+        ? `${process.env.NEXT_PUBLIC_UR}/dashboard/orders?orderId=${orderId}`
+        : `${process.env.NEXT_PUBLIC_UR}/catalog?orderId=${orderId}`,
+    server_url: `${process.env.NEXT_PUBLIC_UR}/api/liqpay-webhook`,
   };
 
   const data = Buffer.from(JSON.stringify(payment)).toString("base64");

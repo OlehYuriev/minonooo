@@ -5,3 +5,5 @@ env:
     secret: NEXT_PUBLIC_NP_KEY
   - variable: NEXT_PUBLIC_LIQPAY_PUBLICK_KEY
     secret: NEXT_PUBLIC_LIQPAY_PUBLICK_KEY
+  - variable: NEXT_PUBLIC_UR
+    secret: NEXT_PUBLIC_UR
