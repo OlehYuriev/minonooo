@@ -12,5 +12,24 @@
       ],
       "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
     }
-  ]
+  ],
+  "hosting": {
+    "app": {
+      "source": "app",
+      "env": [
+        {
+          "variable": "NEXT_PUBLIC_LIQPAY_PUBLICK_KEY",
+          "secret": "NEXT_PUBLIC_LIQPAY_PUBLICK_KEY"
+        },
+        {
+          "variable": "NEXT_PUBLIC_LIQPAY_PRIVATE_KEY",
+          "secret": "NEXT_PUBLIC_LIQPAY_PRIVATE_KEY"
+        },
+        {
+          "variable": "NEXT_PUBLIC_NP_KEY",
+          "secret": "NEXT_PUBLIC_NP_KEY"
+        }
+      ]
+    }
+  }
 }
