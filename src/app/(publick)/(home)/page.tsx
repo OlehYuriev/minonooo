@@ -2,6 +2,7 @@ import { ProductSlider } from "@/components/product-slider";
 import { HomeSlider } from "@/sections/home";
 
 export default function Home() {
+  console.log("LIQPAY KEY:", process.env.NEXT_PUBLIC_LIQPAY_PUBLICK_KEY);
   return (
     <>
       <HomeSlider />
