@@ -1,8 +1,7 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
-
 admin.initializeApp();
-const db = admin.firestore();
+
 export const setDefaultUserRole = functions.auth
   .user()
   .onCreate(async (user) => {
@@ -17,7 +16,7 @@ export const setDefaultUserRole = functions.auth
       await admin.auth().setCustomUserClaims(user.uid, { role });
 
       functions.logger.info(
-        `Пользователю ${user.email} назначена роль: ${role}`
+        `Пользователю ${user.email} назначена роль: ${role}`,
       );
     } catch (error) {
       functions.logger.error("Ошибка при установке роли:", error);
