@@ -3,16 +3,22 @@ import { useAuth } from "@/auth/hooks/use-auth";
 import { AUTH_MENU, LINKS } from "@/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Dispatch, SetStateAction } from "react";
 import styles from "./style.module.css";
 
 type Props = {
   flexCol?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
 };
 
-export function Navigation({ flexCol = false }: Props) {
+export function Navigation({ flexCol = false, setOpen }: Props) {
   const { user } = useAuth();
   const pathname = usePathname();
-
+  const handleLinkClick = () => {
+    if (setOpen) {
+      setOpen(false);
+    }
+  };
   return (
     <nav>
       <ul
@@ -24,6 +30,7 @@ export function Navigation({ flexCol = false }: Props) {
           <li key={link.name}>
             <Link
               href={link.path}
+              onClick={handleLinkClick}
               className={`${
                 pathname === link.path ? `${styles.active}` : ""
               } hover:text-gray-900 ${styles.underlineAnim} `}
@@ -38,6 +45,7 @@ export function Navigation({ flexCol = false }: Props) {
               <li key={link.title}>
                 <Link
                   href={link.href}
+                  onClick={handleLinkClick}
                   className={`${
                     pathname === link.href ? `${styles.active}` : ""
                   } hover:text-gray-900 ${styles.underlineAnim} `}

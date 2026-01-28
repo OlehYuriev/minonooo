@@ -10,7 +10,10 @@ export function BurgerMenu() {
   const [open, setOpen] = useState(false);
 
   const logout = useLogout();
-
+  function handleLogout() {
+    logout();
+    setOpen(false);
+  }
   return (
     <>
       <button
@@ -44,10 +47,10 @@ export function BurgerMenu() {
         position="left"
         className={` w-2/4 max-[500px]:w-3/4`}
       >
-        <Navigation />
+        <Navigation setOpen={setOpen} />
         {user && (
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="opacity-40 hover:opacity-100   transition-all inline-flex mt-6"
           >
             Вихід

@@ -1,11 +1,13 @@
 "use client";
 import { useAuth } from "@/auth/hooks/use-auth";
 import { Loader } from "@/components/ui/loader";
+import { ROUTES } from "@/constants/routes";
 import { db } from "@/firebase";
 import { useClearCart } from "@/hooks/use-clear-cart";
 import { IOrder } from "@/type/orders";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 export function OrdersTable() {
@@ -129,6 +131,7 @@ export function OrdersTable() {
                         <th>Колір</th>
                         <th>Кількість</th>
                         <th>Ціна(грн)</th>
+                        <th>Перейти на товар</th>
                       </tr>
                     </thead>
 
@@ -154,6 +157,9 @@ export function OrdersTable() {
                           <td className={classTr}>{item.selectedColor}</td>
                           <td className={classTr}>x{item.quantity}</td>
                           <td className={classTr}>{item.totalPrice}</td>
+                          <td className={classTr}>
+                            <Link href={ROUTES.PRODUCT(item.id)}>▶</Link>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
