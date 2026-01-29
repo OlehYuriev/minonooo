@@ -26,13 +26,13 @@ export function ProductDetails({
     (color: string, colorCode: string) => {
       setColorProduct({ colorName: color, colorCode: colorCode });
     },
-    [setColorProduct]
+    [setColorProduct],
   );
 
   const options = useMemo(() => {
     return (
       product?.variants?.find(
-        (variant) => variant.colorName === colorProduct.colorName
+        (variant) => variant.colorName === colorProduct.colorName,
       )?.sizes ?? []
     );
   }, [product?.variants, colorProduct.colorName]);
@@ -45,8 +45,13 @@ export function ProductDetails({
 
   const handleAdd = () => {
     if (!selectedSize || !colorProduct || !product?.price) return;
+    const colorProductImg = product?.variants?.find(
+      (variant) => variant.colorName === colorProduct.colorName,
+    );
+
     addToCartProduct({
       ...product,
+      image: colorProductImg?.image ? colorProductImg?.image[0] : product.image,
       quantity: 1,
       totalPrice: product?.price,
       selectedSize: selectedSize,
