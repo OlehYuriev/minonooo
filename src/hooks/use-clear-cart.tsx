@@ -23,8 +23,10 @@ export function useClearCart() {
         }
         const data = docSnap.data();
         if (data.status === "paid") {
-          toast("Оплата пройшла успішно!");
           clearCart();
+          if (data.deliveryType !== "Самовивіз") {
+            toast("Оплата пройшла успішно!");
+          }
         }
       },
       (error) => {

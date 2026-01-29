@@ -28,7 +28,7 @@ export function ProductSearch() {
     (text: string) => {
       setSearchQuery(text);
     },
-    [setSearchQuery]
+    [setSearchQuery],
   );
 
   function closeList() {
@@ -51,7 +51,7 @@ export function ProductSearch() {
             <Image src="/search.svg" alt="Пошук" width={19} height={19} />
           }
         />
-        <div className="absolute top-1/2 -translate-y-1/2 right-2">
+        <div className="absolute top-1/2 -translate-y-1/2 -right-4">
           <VoiceSearch onText={onTextHandler} />
         </div>
       </div>
