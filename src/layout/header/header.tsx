@@ -17,7 +17,7 @@ export async function Header() {
         <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
           <Link href={ROUTES.HOME} className="text-2xl font-bold text-gray-800">
             <Image
-              src="/logo.jpg"
+              src="https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,w_48,h_48,c_fill/v1769981031/logo_dvcds7.jpg"
               alt="Logo"
               width={45}
               height={45}

@@ -52,7 +52,7 @@ export const Card = memo(function Card({ product }: CardProps) {
         </div>
 
         <div className="flex flex-col mt-5">
-          <h4>{product.name}</h4>
+          <h2>{product.name}</h2>
           <p>{product.price} грн.</p>
           <div className="flex gap-x-1.5 mt-1">
             {product.variants.map((variant, index) => (

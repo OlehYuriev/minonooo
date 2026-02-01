@@ -10,7 +10,7 @@ export function Footer() {
         <div className="w-1/6 flex justify-center order-2 sm:order-1 mt-9 sm:mt-0">
           <Link href={ROUTES.HOME} className="text-2xl font-bold text-gray-800">
             <Image
-              src="/logo.jpg"
+              src="https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,w_48,h_48,c_fill/v1769981031/logo_dvcds7.jpg"
               alt="Logo"
               width={72}
               height={72}
