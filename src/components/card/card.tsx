@@ -46,6 +46,7 @@ export const Card = memo(function Card({ product }: CardProps) {
               fill
               sizes="100%"
               className="object-cover"
+              priority
             />
           </Link>
         </div>

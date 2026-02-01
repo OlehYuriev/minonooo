@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    formats: ["image/avif", "image/webp"],
+    domains: ["res.cloudinary.com"],
     remotePatterns: [
       {
         protocol: "https",

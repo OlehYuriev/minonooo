@@ -9,9 +9,27 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 export function HomeSwiper() {
   const slides = [
-    { id: 1, card_1: "/slide1.jpg", card_2: "/slide2.jpg" },
-    { id: 2, card_1: "/slide3.jpg", card_2: "/slide4.jpg" },
-    { id: 3, card_1: "/slide5.jpg", card_2: "/slide2.jpg" },
+    {
+      id: 1,
+      card_1:
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769943269/slide1_yu3bnl.jpg",
+      card_2:
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975309/slide2_youvpe.jpg",
+    },
+    {
+      id: 2,
+      card_1:
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975430/slide3_cgwjvc.jpg",
+      card_2:
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975503/slide4_oe0rdf.jpg",
+    },
+    {
+      id: 3,
+      card_1:
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975750/slide5_ggiqms.jpg",
+      card_2:
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975309/slide2_youvpe.jpg",
+    },
   ];
   return (
     <Swiper
@@ -46,8 +64,9 @@ export function HomeSwiper() {
                 src={slide.card_1}
                 alt="Товар"
                 fill
-                sizes="320px"
+                sizes="(max-width: 640px) 100vw,(max-width: 1024px) 50vw,25vw"
                 className="object-cover rounded-xl"
+                priority
               />
 
               {/* Полупрозрачный градиент сверху для эффекта фокуса (по желанию) */}
@@ -66,8 +85,9 @@ export function HomeSwiper() {
                 src={slide.card_2}
                 alt="Товар"
                 fill
-                sizes="320px"
+                sizes="(max-width: 640px) 100vw,(max-width: 1024px) 50vw,25vw"
                 className="object-cover rounded-xl"
+                priority
               />
 
               {/* Полупрозрачный градиент сверху для эффекта фокуса (по желанию) */}

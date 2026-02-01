@@ -5,7 +5,7 @@ import { HomeSwiper } from "./home-swiper";
 
 export function HomeSlider() {
   return (
-    <section className="mt-14 md:bg-[url('/sea.png')] bg-cover bg-center bg-fixed relative screen-minus-header">
+    <section className="mt-14 md:bg-[url('https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto/v1769976202/sea_d8zeil.png')] bg-cover bg-center bg-fixed relative screen-minus-header">
       <div
         className="w-96 absolute md:right-1/12  right-1/2  translate-x-1/2 md:translate-x-0 
 		-translate-y-1/2 top-1/2 z-2 pointer-events-none"

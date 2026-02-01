@@ -5,11 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import type { Swiper as SwiperType } from "swiper";
-import "swiper/css";
 import "swiper/css/effect-fade";
-import "swiper/css/free-mode";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import "swiper/css/thumbs";
 // import required modules
 import { ButtonSlider } from "@/components/ui/buttons";
