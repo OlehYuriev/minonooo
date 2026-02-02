@@ -106,11 +106,11 @@ export default function ProductSlider({ product, colorProduct }: Props) {
                 <Image
                   src={image}
                   alt={product.name || "фото"}
-                  width={1200}
-                  height={1200}
+                  width={600}
+                  height={600}
                   className="w-full max-h-[590px] h-auto object-contain"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 50vw"
-                  priority
+                  fetchPriority={index === 0 ? "high" : "auto"}
                 />
               </SwiperSlide>
             ))}
