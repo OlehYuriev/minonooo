@@ -21,12 +21,10 @@ type ToastContextType = {
   showToast: (
     message: string,
     type?: ToastType,
-    position?: ToastPosition
+    position?: ToastPosition,
   ) => void;
 };
-export const ToastContext = createContext<ToastContextType | undefined>(
-  undefined
-);
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -35,7 +33,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     (
       message: string,
       type: ToastType = "success",
-      position: ToastPosition = "bottom-right"
+      position: ToastPosition = "bottom-right",
     ) => {
       const id = crypto.randomUUID();
       setToasts((prev) => [...prev, { id, message, type, position }]);
@@ -44,7 +42,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         setToasts((prev) => prev.filter((t) => t.id !== id));
       }, 3000);
     },
-    []
+    [],
   );
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));

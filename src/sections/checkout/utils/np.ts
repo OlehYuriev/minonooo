@@ -2,7 +2,7 @@ import { novaPoshtaRequest } from "@/services/nova-poshta";
 import { FetchOptions, TOption } from "@/type/option";
 import { transformSchedule } from "@/utils/transform-schedule";
 
-export function createNovaPoshtaRequestBody<T extends object>(
+function createNovaPoshtaRequestBody<T extends object>(
   calledMethod: string,
   params: T,
 ) {
