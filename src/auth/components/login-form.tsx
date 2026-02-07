@@ -12,6 +12,7 @@ import { getIdTokenResult, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { LoginFormData, loginSchema } from "../schemas";
+import { authCookie } from "../utils/auth-cookie";
 
 export function LoginForm() {
   const methods = useForm<LoginFormData>({
@@ -35,14 +36,16 @@ export function LoginForm() {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         data.email.trim(),
-        data.password.trim()
+        data.password.trim(),
       );
       const user = userCredential.user;
       const tokenResult = await getIdTokenResult(user, true); // true = форс обновление
       const role = tokenResult.claims.role as "admin" | "user" | null;
+
       setUser(user);
       setRole(role);
-
+      const idToken = await user.getIdToken();
+      await authCookie(idToken);
       router.replace(ROUTES.DASHBOARD.ROOT);
       toast("Ви успішно зайшли!");
     } catch (error) {

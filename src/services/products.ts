@@ -1,5 +1,6 @@
 import { adminDb } from "@/firebase-admin";
 import { IProduct } from "@/type/product";
+import { unstable_cache } from "next/cache";
 
 export async function getProductServer(id: string): Promise<IProduct | null> {
   const querySnap = await adminDb
@@ -22,14 +23,17 @@ export async function getProductServer(id: string): Promise<IProduct | null> {
   } as unknown as IProduct;
 }
 
-// Серверный fetch — несколько товаров (для первой страницы)
-export async function getProductsServer(): Promise<IProduct[]> {
-  const snap = await adminDb.collection("products").get();
+export const getProductsServer = unstable_cache(
+  async (): Promise<IProduct[]> => {
+    const snap = await adminDb.collection("products").get();
 
-  const products = snap.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as unknown as IProduct[];
-
-  return products;
-}
+    return snap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as unknown as IProduct[];
+  },
+  ["products"],
+  {
+    revalidate: false, // 🔒 навсегда
+  },
+);

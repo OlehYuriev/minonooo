@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { RegisterFormData, registerSchema } from "../schemas";
+import { authCookie } from "../utils/auth-cookie";
 import { waitForRole } from "../utils/wait-for-role";
 
 export function RegisterForm() {
@@ -40,7 +41,7 @@ export function RegisterForm() {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         data.email.trim(),
-        data.password.trim()
+        data.password.trim(),
       );
       const user = userCredential.user;
       const userRole = await waitForRole(user);
@@ -51,7 +52,9 @@ export function RegisterForm() {
 
       setUser(user);
       setRole(userRole);
+      const idToken = await user.getIdToken();
 
+      await authCookie(idToken);
       toast("Ви успішно зареєструвались!");
 
       router.replace(ROUTES.DASHBOARD.ROOT);

@@ -3,6 +3,7 @@ import { Footer } from "@/layout/footer";
 import { Header } from "@/layout/header";
 import { ProductProvider } from "@/providers/product-provider";
 import { ToastProvider } from "@/providers/toast-provider";
+import { getCurrentUser } from "@/services/auth-server";
 import { getProductsServer } from "@/services/products";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
@@ -49,13 +50,15 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const avatarCookie = cookieStore.get("avatarUrl")?.value;
   const products = await getProductsServer();
+  const user = await getCurrentUser();
+  console.log("user", user);
   return (
     <html lang="uk">
       <body
         className={`${montserrat.variable} ${forum.variable} ${playfair.variable} ${inter.variable} font-normal antialiased`}
       >
         <ProductProvider initialProducts={products || []}>
-          <AuthProvider initialAvatarUrl={avatarCookie}>
+          <AuthProvider initialAvatarUrl={avatarCookie} initialUser={user}>
             <ToastProvider>
               <div className="max-w-[1440px] mx-auto relative" id="container">
                 <Header />
