@@ -1,8 +1,6 @@
 import { useAuth } from "@/auth/hooks/use-auth";
 import { ROUTES } from "@/constants/routes";
 import { auth } from "@/firebase";
-import { setAvatarUrlApi } from "@/services/user";
-import { deleteClientCookie } from "@/utils/cookie";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -12,8 +10,7 @@ export function useLogout() {
   const logout = async () => {
     try {
       await signOut(auth);
-      await setAvatarUrlApi(null);
-      deleteClientCookie("avatarUrl");
+      await fetch("/api/logout", { method: "POST" });
       setUser(null);
       setRole(null);
       router.replace(ROUTES.LOGIN);

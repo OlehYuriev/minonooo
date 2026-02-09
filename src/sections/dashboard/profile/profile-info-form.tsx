@@ -11,12 +11,8 @@ import {
   profileSchema,
 } from "@/sections/dashboard/profile/schema";
 
-import {
-  fetchUserProfile,
-  setAvatarUrlApi,
-  uploadAvatar,
-} from "@/services/user";
-import { deleteClientCookie } from "@/utils/cookie";
+import { authCookie } from "@/auth/utils/auth-cookie";
+import { fetchUserProfile, uploadAvatar } from "@/services/user";
 import { toast } from "@/utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateProfile } from "firebase/auth";
@@ -79,10 +75,6 @@ export function ProfileInfoForm() {
         avatarUrl = await uploadAvatar(user.uid, data.avatar);
       }
 
-      if (typeof avatarUrl === "string") {
-        await setAvatarUrlApi(avatarUrl);
-      }
-
       setAvatarUrl(typeof avatarUrl === "string" ? avatarUrl : null);
       const docRef = doc(db, "users", user.uid);
       await setDoc(docRef, { ...data, avatar: avatarUrl }, { merge: true });
@@ -91,9 +83,11 @@ export function ProfileInfoForm() {
         displayName: data.login,
         photoURL: typeof avatarUrl === "string" ? avatarUrl : "",
       });
+      const idToken = await auth.currentUser.getIdToken(true);
+      await authCookie(idToken);
       await auth.currentUser.reload();
 
-      setUser({ ...auth.currentUser });
+      setUser(auth.currentUser);
 
       toast("Профіль успішно оновлено!");
     } catch (error) {
@@ -111,9 +105,6 @@ export function ProfileInfoForm() {
       const promises = list.items.map((fileRef) => deleteObject(fileRef));
 
       await Promise.all(promises);
-
-      await setAvatarUrlApi(null);
-      deleteClientCookie("avatarUrl");
       setAvatarUrl(null);
       console.log("Аватар успішно видалено");
     } catch (error) {

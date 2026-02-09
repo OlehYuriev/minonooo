@@ -60,6 +60,7 @@ export function RHFAvatarInput({ name, onRemove }: Props) {
             width={160}
             height={160}
             className="rounded-full object-cover w-full h-full"
+            priority
           />
         )}
 

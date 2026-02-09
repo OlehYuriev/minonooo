@@ -28,7 +28,7 @@ export function LoginForm() {
     formState: { isSubmitting },
   } = methods;
 
-  const { setUser, setRole } = useAuth();
+  const { setUser, setRole, setAvatarUrl } = useAuth();
   const router = useRouter();
 
   const onSubmit = handleSubmit(async (data) => {
@@ -43,6 +43,9 @@ export function LoginForm() {
       const role = tokenResult.claims.role as "admin" | "user" | null;
 
       setUser(user);
+      const avatarUrl = user.photoURL || null;
+
+      setAvatarUrl(avatarUrl);
       setRole(role);
       const idToken = await user.getIdToken();
       await authCookie(idToken);

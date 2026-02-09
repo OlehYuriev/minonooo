@@ -6,20 +6,8 @@ export async function POST(req: Request) {
   const { idToken } = await req.json();
   const cookieStore = await cookies();
 
-  if (!idToken) {
-    // если idToken null → удаляем cookie
-    cookieStore.set("session", "", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 0,
-      path: "/",
-    });
-    return NextResponse.json({ status: "ok", message: "Logged out" });
-  }
-
   // иначе создаём session cookie как раньше
-  const expiresIn = 5 * 60 * 1000; // 5 min
+  const expiresIn = 7 * 24 * 60 * 60 * 1000; // 7 days
   const sessionCookie = await adminAuth.createSessionCookie(idToken, {
     expiresIn,
   });
