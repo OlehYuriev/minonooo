@@ -10,7 +10,11 @@ export function useLogout() {
   const logout = async () => {
     try {
       await signOut(auth);
-      await fetch("/api/logout", { method: "POST" });
+      const res = await fetch("/api/logout", { method: "POST" });
+      const result = await res.json();
+      if (!result.ok) {
+        throw new Error("Помилка при видаленні сесії");
+      }
       setUser(null);
       setRole(null);
       setAvatarUrl(null);

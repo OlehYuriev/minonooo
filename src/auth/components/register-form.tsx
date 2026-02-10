@@ -44,6 +44,12 @@ export function RegisterForm() {
         data.password.trim(),
       );
       const user = userCredential.user;
+      const idToken = await user.getIdToken();
+      await authCookie(idToken);
+      const res = await authCookie(idToken);
+      const result = await res.json();
+      if (result.status !== "ok")
+        throw new Error("Помилка при установці сесії");
       const userRole = await waitForRole(user);
       await saveLogin(user.uid, login);
       await updateProfile(user, {
@@ -52,9 +58,7 @@ export function RegisterForm() {
 
       setUser(user);
       setRole(userRole);
-      const idToken = await user.getIdToken();
 
-      await authCookie(idToken);
       toast("Ви успішно зареєструвались!");
 
       router.replace(ROUTES.DASHBOARD.ROOT);
