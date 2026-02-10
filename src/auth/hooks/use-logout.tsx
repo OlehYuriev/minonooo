@@ -5,7 +5,7 @@ import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 export function useLogout() {
-  const { setUser, setRole } = useAuth();
+  const { setUser, setRole, setAvatarUrl } = useAuth();
   const router = useRouter();
   const logout = async () => {
     try {
@@ -13,6 +13,7 @@ export function useLogout() {
       await fetch("/api/logout", { method: "POST" });
       setUser(null);
       setRole(null);
+      setAvatarUrl(null);
       router.replace(ROUTES.LOGIN);
     } catch (error) {
       console.error("Помилка при виході:", error);

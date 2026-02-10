@@ -39,7 +39,14 @@ export function LoginForm() {
         data.password.trim(),
       );
       const user = userCredential.user;
-      const tokenResult = await getIdTokenResult(user, true); // true = форс обновление
+      const idToken = await user.getIdToken();
+      await authCookie(idToken);
+      const res = await authCookie(idToken);
+      const result = await res.json();
+      if (result.status !== "ok")
+        throw new Error("Помилка при установці сесії");
+
+      const tokenResult = await getIdTokenResult(user, true);
       const role = tokenResult.claims.role as "admin" | "user" | null;
 
       setUser(user);
@@ -47,8 +54,7 @@ export function LoginForm() {
 
       setAvatarUrl(avatarUrl);
       setRole(role);
-      const idToken = await user.getIdToken();
-      await authCookie(idToken);
+
       router.replace(ROUTES.DASHBOARD.ROOT);
       toast("Ви успішно зайшли!");
     } catch (error) {
