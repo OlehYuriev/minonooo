@@ -9,7 +9,6 @@ import { toast } from "@/utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FirebaseError } from "firebase/app";
 import { getIdTokenResult, signInWithEmailAndPassword } from "firebase/auth";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { LoginFormData, loginSchema } from "../schemas";
 import { authCookie } from "../utils/auth-cookie";
@@ -29,7 +28,6 @@ export function LoginForm() {
   } = methods;
 
   const { setUser, setRole, setAvatarUrl } = useAuth();
-  const router = useRouter();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -53,10 +51,8 @@ export function LoginForm() {
 
       setAvatarUrl(avatarUrl);
       setRole(role);
-      setTimeout(() => {
-        router.replace(ROUTES.DASHBOARD.ROOT);
-      }, 400);
 
+      window.location.replace(ROUTES.DASHBOARD.ROOT);
       toast("Ви успішно зайшли!");
     } catch (error) {
       if (error instanceof FirebaseError) {

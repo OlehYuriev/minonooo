@@ -11,7 +11,6 @@ import { ROUTES } from "@/constants/routes";
 import { checkLoginExists, saveLogin } from "@/services/user";
 import { toast } from "@/utils/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { RegisterFormData, registerSchema } from "../schemas";
 import { authCookie } from "../utils/auth-cookie";
@@ -19,7 +18,6 @@ import { waitForRole } from "../utils/wait-for-role";
 
 export function RegisterForm() {
   const { setUser, setRole } = useAuth();
-  const router = useRouter();
 
   const methods = useForm<RegisterFormData>({
     mode: "onSubmit",
@@ -60,9 +58,7 @@ export function RegisterForm() {
       setRole(userRole);
 
       toast("Ви успішно зареєструвались!");
-      setTimeout(() => {
-        router.replace(ROUTES.DASHBOARD.ROOT);
-      }, 400);
+      window.location.replace(ROUTES.DASHBOARD.ROOT);
     } catch (error) {
       if (error instanceof FirebaseError) {
         console.log(error.code);
