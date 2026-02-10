@@ -40,7 +40,6 @@ export function LoginForm() {
       );
       const user = userCredential.user;
       const idToken = await user.getIdToken();
-      await authCookie(idToken);
       const res = await authCookie(idToken);
       const result = await res.json();
       if (result.status !== "ok")
@@ -54,8 +53,10 @@ export function LoginForm() {
 
       setAvatarUrl(avatarUrl);
       setRole(role);
+      setTimeout(() => {
+        router.replace(ROUTES.DASHBOARD.ROOT);
+      }, 400);
 
-      router.replace(ROUTES.DASHBOARD.ROOT);
       toast("Ви успішно зайшли!");
     } catch (error) {
       if (error instanceof FirebaseError) {

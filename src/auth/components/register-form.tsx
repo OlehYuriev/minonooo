@@ -60,8 +60,9 @@ export function RegisterForm() {
       setRole(userRole);
 
       toast("Ви успішно зареєструвались!");
-
-      router.replace(ROUTES.DASHBOARD.ROOT);
+      setTimeout(() => {
+        router.replace(ROUTES.DASHBOARD.ROOT);
+      }, 400);
     } catch (error) {
       if (error instanceof FirebaseError) {
         console.log(error.code);

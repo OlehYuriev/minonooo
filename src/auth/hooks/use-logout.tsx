@@ -12,13 +12,17 @@ export function useLogout() {
       await signOut(auth);
       const res = await fetch("/api/logout", { method: "POST" });
       const result = await res.json();
+      console.log(result);
       if (!result.ok) {
         throw new Error("Помилка при видаленні сесії");
       }
+
       setUser(null);
       setRole(null);
       setAvatarUrl(null);
-      router.replace(ROUTES.LOGIN);
+      setTimeout(() => {
+        router.replace(ROUTES.LOGIN);
+      }, 400);
     } catch (error) {
       console.error("Помилка при виході:", error);
     }
