@@ -3,11 +3,11 @@ import { Footer } from "@/layout/footer";
 import { Header } from "@/layout/header";
 import { ProductProvider } from "@/providers/product-provider";
 import { ToastProvider } from "@/providers/toast-provider";
+import { getCurrentUser } from "@/services/auth-server";
 import { getProductsServer } from "@/services/products";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Forum, Inter, Montserrat, Playfair_Display } from "next/font/google";
-import { cookies } from "next/headers";
 
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
@@ -46,16 +46,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const avatarCookie = cookieStore.get("avatarUrl")?.value;
   const products = await getProductsServer();
+  const user = await getCurrentUser();
   return (
     <html lang="uk">
       <body
         className={`${montserrat.variable} ${forum.variable} ${playfair.variable} ${inter.variable} font-normal antialiased`}
       >
         <ProductProvider initialProducts={products || []}>
-          <AuthProvider initialAvatarUrl={avatarCookie}>
+          <AuthProvider initialUser={user}>
             <ToastProvider>
               <div className="max-w-[1440px] mx-auto relative" id="container">
                 <Header />

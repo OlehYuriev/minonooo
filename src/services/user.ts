@@ -64,24 +64,3 @@ export async function uploadAvatar(userId: string, file: File) {
 
   return url;
 }
-
-/* ---------------------------------------------------------------------------------------- */
-
-export async function setAvatarUrlApi(url: string | null) {
-  try {
-    const response = await fetch("/api/set-avatar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to set avatar URL");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Ошибка при установке аватара:", error);
-    throw error;
-  }
-}

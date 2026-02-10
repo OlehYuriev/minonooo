@@ -1,10 +1,10 @@
 "use client";
 
 import { auth } from "@/firebase";
-import { setAvatarUrlApi } from "@/services/user";
-
+import { DecodedIdToken } from "firebase-admin/auth";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { createContext, useEffect, useState } from "react";
+import { authCookie } from "../utils/auth-cookie";
 
 type AuthContextType = {
   user: User | null;
@@ -28,36 +28,38 @@ export const AuthContext = createContext<AuthContextType>({
 
 type AuthProviderProps = {
   children: React.ReactNode;
-  initialAvatarUrl?: string;
+  initialUser: DecodedIdToken | null;
 };
-export function AuthProvider({
-  children,
-  initialAvatarUrl,
-}: AuthProviderProps) {
+export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<"admin" | "user" | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(
-    initialAvatarUrl || null
+    initialUser?.picture || null,
   );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!initialUser) return;
       try {
         setLoading(true);
+        if (!user) {
+          setUser(null);
+          setRole(null);
+          setAvatarUrl(null);
+          return;
+        }
         if (user) {
           setUser(user);
+
           const avatarUrl = user.photoURL || null;
 
-          await setAvatarUrlApi(avatarUrl);
           setAvatarUrl(avatarUrl);
 
           const tokenResult = await user.getIdTokenResult();
           setRole(tokenResult.claims.role as "admin" | "user");
         } else {
           setUser(null);
-
-          await setAvatarUrlApi(null);
           setAvatarUrl(null);
           setRole(null);
         }
@@ -69,8 +71,22 @@ export function AuthProvider({
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [initialUser]);
 
+  useEffect(() => {
+    if (!user) return;
+
+    const refreshServerSession = async () => {
+      try {
+        const idToken = await user.getIdToken(true); // force refresh
+        await authCookie(idToken);
+      } catch (error) {
+        console.error("Помилка при оновленні сесії", error);
+      }
+    };
+
+    refreshServerSession();
+  }, [user]);
   return (
     <AuthContext.Provider
       value={{ user, loading, role, setUser, setRole, avatarUrl, setAvatarUrl }}
