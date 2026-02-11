@@ -34,6 +34,6 @@ export const getProductsServer = unstable_cache(
   },
   ["products"],
   {
-    revalidate: false, // 🔒 навсегда
+    revalidate: 10, // 🔒 навсегда
   },
 );

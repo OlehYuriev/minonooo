@@ -53,7 +53,6 @@ export function LoginForm() {
       setRole(role);
 
       window.location.replace(ROUTES.DASHBOARD.ROOT);
-      toast("Ви успішно зайшли!");
     } catch (error) {
       if (error instanceof FirebaseError) {
         console.log(error.code);

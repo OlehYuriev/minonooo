@@ -37,7 +37,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(
     initialUser?.picture || null,
   );
-  console.log("sdsd");
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!initialUser) return;

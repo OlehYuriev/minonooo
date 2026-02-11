@@ -57,7 +57,6 @@ export function RegisterForm() {
       setUser(user);
       setRole(userRole);
 
-      toast("Ви успішно зареєструвались!");
       window.location.replace(ROUTES.DASHBOARD.ROOT);
     } catch (error) {
       if (error instanceof FirebaseError) {
