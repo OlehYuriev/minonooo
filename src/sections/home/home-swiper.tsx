@@ -12,23 +12,23 @@ export function HomeSwiper() {
     {
       id: 1,
       card_1:
-        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769943269/slide1_yu3bnl.jpg",
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_500/v1769943269/slide1_yu3bnl.jpg",
       card_2:
-        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975309/slide2_youvpe.jpg",
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_500/v1769975309/slide2_youvpe.jpg",
     },
     {
       id: 2,
       card_1:
-        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975430/slide3_cgwjvc.jpg",
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_500/v1769975430/slide3_cgwjvc.jpg",
       card_2:
-        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975503/slide4_oe0rdf.jpg",
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_500/v1769975503/slide4_oe0rdf.jpg",
     },
     {
       id: 3,
       card_1:
-        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975750/slide5_ggiqms.jpg",
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_500/v1769975750/slide5_ggiqms.jpg",
       card_2:
-        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_600/v1769975309/slide2_youvpe.jpg",
+        "https://res.cloudinary.com/dx0qnlp6l/image/upload/f_auto,q_auto,dpr_auto,w_500/v1769975309/slide2_youvpe.jpg",
     },
   ];
   return (
