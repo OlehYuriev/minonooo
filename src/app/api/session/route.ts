@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   cookieStore.set("session", sessionCookie, {
     httpOnly: true,
     secure: true,
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: expiresIn / 1000,
     path: "/",
   });
